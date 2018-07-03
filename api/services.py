@@ -1,9 +1,7 @@
-import nano
-
-from time import sleep
 from datetime import datetime
+from time import sleep
 
-from django.core import serializers
+import nano
 
 from .rpc_client import RPCClient
 
@@ -41,13 +39,13 @@ def find_from_address(to_address, sent_amount):
 
 
 def generate_transaction_model(address, required_amount):
-    transaction = dict(success=False)
+    transaction = dict(success=False, required_amount=required_amount)
 
     if required_amount_received(address, required_amount):
         transaction['success'] = True
         transaction['from_address'] = find_from_address(address, required_amount)
-        transaction['timestamp'] = datetime.utcnow()
 
+    transaction['timestamp'] = datetime.utcnow()
     return transaction
 
 
