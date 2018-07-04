@@ -10,7 +10,6 @@ POLLING_INTERVAL = 3
 
 
 def required_amount_received(address, required_amount):
-    # 60/3 = 20 times
     polls = int(TOTAL_WAIT_TIME / POLLING_INTERVAL)
 
     rpc = RPCClient()
@@ -38,12 +37,13 @@ def find_from_address(to_address, sent_amount):
     return 'xrb_todo'
 
 
-def generate_transaction_model(address, required_amount):
+def make_transaction_response(address, required_amount):
     transaction = dict(success=False, required_amount=required_amount)
+    required_raw_amount = nano_to_raw(required_amount)
 
-    if required_amount_received(address, required_amount):
+    if required_amount_received(address, required_raw_amount):
         transaction['success'] = True
-        transaction['from_address'] = find_from_address(address, required_amount)
+        transaction['from_address'] = find_from_address(address, required_raw_amount)
 
     transaction['timestamp'] = datetime.utcnow()
     return transaction
