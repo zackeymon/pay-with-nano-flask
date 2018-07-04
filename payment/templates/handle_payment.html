@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{% static 'qrcode.min.js' %}"></script>
+</head>
+<body>
+<p>Pay {{ amount }} NANO to address {{ address }}</p>
+<div id="qrcode"></div>
+<p id="status"></p>
+</body>
+
+
+<script>
+    new QRCode(document.getElementById("qrcode"), "xrb:{{ address }}?amount={{ raw_amount }}");
+    axios.get("http://localhost:8000/api/pay/?address={{ address }}&amount={{ raw_amount }}")
+        .then(result => {
+        console.log("Response Status: " + result.status);
+        if (result.data.success === true)
+            document.getElementById("status").innerText = "Payment received from: " + result.data.from_address;
+        else
+            document.getElementById("status").innerText = "Payment unsuccessful";
+        document.getElementById("qrcode").remove();
+    })
+    .catch(error => {
+        console.log(error);
+    alert("Cannot establish connection to the payment processor");
+    })
+    ;
+</script>
+</html>
