@@ -9,3 +9,9 @@ class RPCClient:
         body = self.rpc.account_balance(account=address)
         return body["balance"] + body["pending"]
 
+    def get_account_pending_blocks(self, address):
+        hashes = self.rpc.accounts_pending([address])[address]
+        if hashes:
+            return self.rpc.blocks_info(hashes)
+        return []
+

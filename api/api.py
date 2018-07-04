@@ -6,7 +6,7 @@ api = Blueprint('api', __name__)
 
 @api.route('/api')
 def default():
-    return 'api is working!'
+    return 'api is workinggg!'
 
 
 @api.route('/api/payment_received')
