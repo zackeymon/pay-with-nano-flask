@@ -65,3 +65,8 @@ def make_transaction_response(address, required_amount):
 
     transaction['timestamp'] = datetime.utcnow()
     return transaction
+
+
+def generate_uri(address, required_amount):
+    required_raw_amount = nano_to_raw(required_amount)
+    return "xrb:{address}?amount={raw_amount}".format(address=address, raw_amount=required_raw_amount)
