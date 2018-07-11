@@ -12,6 +12,8 @@ class RPCClient:
     def get_account_pending_blocks(self, address):
         hashes = self.rpc.accounts_pending([address])[address]
         if hashes:
+            print("yes!")
             return self.rpc.blocks_info(hashes)
-        return []
+        print("no")
+        return {}
 

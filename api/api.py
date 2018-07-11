@@ -4,12 +4,12 @@ from . import services
 api = Blueprint('api', __name__)
 
 
-@api.route('/api')
+@api.route('/')
 def default():
     return 'api is workinggg!'
 
 
-@api.route('/api/payment_received')
+@api.route('/payment_received')
 def payment_received():
     address = request.args.get('address')
     amount = request.args.get('amount')
