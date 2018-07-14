@@ -3,6 +3,7 @@ from time import sleep
 
 import nano
 
+from api.models import User
 from .rpc_client import RPCClient
 
 TOTAL_WAIT_TIME = 60
@@ -73,12 +74,17 @@ def generate_uri(address, required_amount):
 
 
 def get_wallet_id(username):
-    return "39A86A90379995AD2B9C539A24A28ECD889DCCAF29C4A2B43EB4EF483B71B50A"
+    user = User.query.filter_by(username=username).first()
+    if user:
+        return user.wallet_id
+    return None
 
 
 def validated(username, password):
 
     wallet_id = get_wallet_id(username)
+
+    print(wallet_id)
 
     rpc = RPCClient()
 
