@@ -5,9 +5,9 @@
     <title>Pay</title>
 </head>
 <body>
-    <form action="" method="get">
-        <input type="text" name="username" />
-        <input type="password" name="password" />
+    <form action="" method="post">
+        <input type="text" name="username" placeholder="Username" value="{{ request.form.username }}" />
+        <input type="password" placeholder="Password" name="password" value="{{ request.form.password }}"/>
         <input type="submit" value="Log in" />
     </form>
 </body>
