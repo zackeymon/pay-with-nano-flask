@@ -5,6 +5,7 @@ import nano
 
 from api.models import User
 from .rpc_client import RPCClient
+from database import db
 
 TOTAL_WAIT_TIME = 60
 POLLING_INTERVAL = 3
@@ -81,15 +82,32 @@ def get_wallet_id(username):
 
 
 def validated(username, password):
+    rpc = RPCClient()
 
     wallet_id = get_wallet_id(username)
 
     print(wallet_id)
-
-    rpc = RPCClient()
 
     if wallet_id is None or not rpc.unlock_wallet(wallet_id, password):
         # username not found / password wrong
         return False
 
     return True
+
+
+def initialise_user(username, password):
+    rpc = RPCClient()
+
+    # make new wallet
+    wallet_id = rpc.create_new_wallet()
+
+    # change password
+    rpc.change_wallet_password(wallet_id, password)
+
+    # lock wallet
+    rpc.lock_wallet(wallet_id)
+
+    # save user to database
+    new_user = User(username=username, wallet_id=wallet_id)
+    db.session.add(new_user)
+    db.session.commit()
