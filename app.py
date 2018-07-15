@@ -25,4 +25,4 @@ def hello():
 
 
 if __name__ == '__main__':
-    app.run(threaded=True)
+    app.run(threaded=True, debug=True)
