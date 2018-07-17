@@ -7,10 +7,10 @@
     <title>Pay</title>
 </head>
 <body>
-    <form action="" method="GET">
-        {{ render_field(form.address) }}
-        {{ render_field(form.amount) }}
-        <input type="submit" value="Pay me" />
-    </form>
+<form action="" method="GET">
+    {% for field in form %}
+        {{ render_field(field) }}
+    {% endfor %}
+</form>
 </body>
 </html>
