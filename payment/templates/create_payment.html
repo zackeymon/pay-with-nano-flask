@@ -1,3 +1,5 @@
+{% from "_form_helper.html" import render_field %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,10 +7,10 @@
     <title>Pay</title>
 </head>
 <body>
-    <form action="" method="get">
-        <input type="text" name="address" />
-        <input type="text" name="amount" />
-        <input type="submit" value="Pay me!" />
+    <form action="" method="GET">
+        {{ render_field(form.address) }}
+        {{ render_field(form.amount) }}
+        <input type="submit" value="Pay me" />
     </form>
 </body>
 </html>
