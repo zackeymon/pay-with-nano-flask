@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Payment</title>
+    <title>Pay</title>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="{{ url_for('pay.static', filename='qrcode.min.js') }}"></script>
 </head>
 <body>
 <p>Pay {{ amount }} NANO to address {{ address }}</p>
-<br />
+<br/>
 <div id="qrcode"></div>
 <div id="status"></div>
 </body>
@@ -18,19 +18,21 @@
     new QRCode(document.getElementById("qrcode"), "{{ uri }}");
     axios.get("http://localhost:5000/api/payment_received?address={{ address }}&amount={{ amount }}")
         .then(result => {
-        console.log("Response Status: " + result.status);
-        if (result.data.success === true) {
-            document.getElementById("status").innerHTML =
-                `<p>Payment received from: ${result.data.from_address}</p>
+            console.log("Response Status: " + result.status);
+            if (result.data.success === true) {
+                document.getElementById("status").innerHTML =
+                    `<p>Payment received from: ${result.data.from_address}</p>
                  <p>Block Hash: <a href='https://www.nanode.co/block/${result.data.hash}'>${result.data.hash}</a></p>`;
-        } else
-            document.getElementById("status").innerText = "Payment unsuccessful";
-        document.getElementById("qrcode").remove();
-    })
-    .catch(error => {
-        console.log(error);
-    alert("Cannot establish connection to the payment processor");
-    })
+            } else {
+                document.getElementById("status").innerHTML =
+                    `<p class="warning">Payment unsuccessful</p>`;
+            }
+            document.getElementById("qrcode").remove();
+        })
+        .catch(error => {
+            console.log(error);
+            alert("Cannot establish connection to the payment processor");
+        })
     ;
 </script>
 </html>
