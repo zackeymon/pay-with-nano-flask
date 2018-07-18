@@ -2,7 +2,8 @@ from flask import Blueprint, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api.services import validated, initialise_user
 from api.models import User
-from .forms import LoginForm, RegisterForm
+from database import db
+from .forms import LoginForm, RegisterForm, ChangeAddressForm
 
 terminal = Blueprint('terminal', __name__, static_folder='static', template_folder='templates')
 
@@ -68,3 +69,19 @@ def logout():
 @terminal.route('/debug')
 def debug():
     return current_user.username + current_user.wallet_id
+
+
+@terminal.route('/change_address', methods=['GET', 'POST'])
+@login_required
+def change_address():
+    form = ChangeAddressForm(request.form)
+
+    # POST
+    if form.validate_on_submit():
+        current_user.receiving_address = form.new_address.data
+        db.session.commit()
+        flash("Address updated!")
+        return redirect(url_for('.change_address'))
+
+    # GET, form includes errors
+    return render_template('change_address.html', form=form, current_user=current_user)

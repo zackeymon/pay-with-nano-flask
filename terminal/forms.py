@@ -15,3 +15,8 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', description='********', validators=[InputRequired(), Length(min=4, max=32), EqualTo('re_password')])
     re_password = PasswordField('Repeat Password', description='********', validators=[InputRequired(), Length(min=4, max=32), EqualTo('password')])
     submit = SubmitField('Sign up')
+
+
+class ChangeAddressForm(FlaskForm):
+    new_address = StringField("Address", description='xrb_', validators=[InputRequired()])
+    submit = SubmitField('Change')
