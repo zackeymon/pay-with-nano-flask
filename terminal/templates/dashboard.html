@@ -1,22 +1,10 @@
-{% from "_form_helper.html" import render_field %}
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Log in</title>
-</head>
-<body>
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul class=flashes>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
-<p>Hello, {{ current_user.username }}</p>
-<a href="{{ url_for('.logout') }}">log out</a>
-</body>
-</html>
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <p>Hello, {{ current_user.username }}</p>
+    <p>Your receiving address is: {{ current_user.address }}. <a href="{{ url_for() }}">change</a></p>
+
+    <p><a href="{{ url_for('.logout') }}">log out</a></p>
+{% endblock %}

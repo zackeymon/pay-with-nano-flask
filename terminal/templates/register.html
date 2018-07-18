@@ -1,16 +1,11 @@
-{% from "_form_helper.html" import render_field %}
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Sign up</title>
-</head>
-<body>
+{% block title %}Register{% endblock %}
+
+{% block content %}
 <form action="" method="POST">
     {% for field in form %}
         {{ render_field(field) }}
     {% endfor %}
 </form>
-</body>
-</html>
+{% endblock %}
