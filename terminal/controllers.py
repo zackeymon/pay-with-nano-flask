@@ -55,6 +55,9 @@ def registration_page():
 @terminal.route('/dashboard')
 @login_required
 def dashboard():
+    if current_user.receiving_address is None:
+        flash('Please set a receiving address before continue')
+        return redirect(url_for('.change_address'))
     return render_template('dashboard.html', current_user=current_user)
 
 
