@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, DecimalField
 from wtforms.validators import InputRequired, Length, EqualTo
 
 
@@ -20,3 +20,8 @@ class RegisterForm(FlaskForm):
 class ChangeAddressForm(FlaskForm):
     new_address = StringField("Address", description='xrb_', validators=[InputRequired()])
     submit = SubmitField('Change')
+
+
+class RequestAmountForm(FlaskForm):
+    amount = DecimalField('Amount', description='0.0')
+    submit = SubmitField('Request')

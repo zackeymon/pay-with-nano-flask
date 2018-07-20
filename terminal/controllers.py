@@ -1,9 +1,9 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from api.services import validated, initialise_user
-from api.models import User
+from terminal.models import User
 from database import db
-from .forms import LoginForm, RegisterForm, ChangeAddressForm
+from .forms import LoginForm, RegisterForm, ChangeAddressForm, RequestAmountForm
 
 terminal = Blueprint('terminal', __name__, static_folder='static', template_folder='templates')
 
@@ -55,16 +55,18 @@ def registration_page():
 @terminal.route('/dashboard')
 @login_required
 def dashboard():
+    form = RequestAmountForm()
     if current_user.receiving_address is None:
         flash('Please set a receiving address before continue')
         return redirect(url_for('.change_address'))
-    return render_template('dashboard.html', current_user=current_user)
+    return render_template('dashboard.html', current_user=current_user, form=form)
 
 
 @terminal.route('/logout')
 @login_required
 def logout():
     logout_user()
+    # TODO: LOCK WALLET!
     flash('Successfully logged out!')
     return redirect(url_for('.login_page'))
 

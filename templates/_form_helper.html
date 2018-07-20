@@ -7,14 +7,14 @@
         {% endif %}
 
     {% elif field.type == 'HiddenField' %}
-        {{ field }}
+        {{ field(**kwargs) | safe }}
 
     {% elif field.type == 'SubmitField' %}
-        {{ field(**kwargs)|safe }}
+        {{ field(**kwargs) | safe }}
 
     {% else %}
         <dt>{{ field.label }}
-        <dd>{{ field(placeholder=field.description, **kwargs)|safe }}
+        <dd>{{ field(placeholder=field.description, **kwargs) | safe }}
             {% if field.errors %}
                 <ul class=errors>
                     {% for error in field.errors %}
