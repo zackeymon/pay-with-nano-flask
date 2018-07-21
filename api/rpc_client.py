@@ -33,3 +33,4 @@ class RPCClient:
 
     def change_wallet_password(self, wallet_id, password):
         return self.client.password_change(wallet_id, password)
+

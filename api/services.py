@@ -3,12 +3,12 @@ from time import sleep
 
 import nano
 
-from api.models import User
+from terminal.models import User
 from .rpc_client import RPCClient
 from database import db
 
-TOTAL_WAIT_TIME = 60
-POLLING_INTERVAL = 3
+TOTAL_WAIT_TIME = 18
+POLLING_INTERVAL = 2
 
 
 # Unit conversions
@@ -58,14 +58,14 @@ def get_hash_and_sender(to_address, sent_raw_amount):
 
 
 def make_transaction_response(address, required_amount):
-    transaction = dict(success=False, required_amount=required_amount)
+    transaction = dict(success=False, amount=required_amount, to_address=address)
     required_raw_amount = nano_to_raw(required_amount)
 
     if required_amount_received(address, required_raw_amount):
         transaction['success'] = True
         transaction['hash'], transaction['from_address'] = get_hash_and_sender(address, required_raw_amount)
 
-    transaction['timestamp'] = datetime.utcnow()
+    transaction['timestamp'] = str(datetime.utcnow())
     return transaction
 
 
