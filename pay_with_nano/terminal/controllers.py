@@ -1,11 +1,13 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash, session
+import os
+from flask import Blueprint, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from api.services import validated, initialise_user
-from terminal.models import User
-from database import db
+from pay_with_nano import basedir
+from pay_with_nano.terminal.services import validated, initialise_user
+from pay_with_nano.core.models import User
+from pay_with_nano.database import db
 from .forms import LoginForm, RegisterForm, ChangeAddressForm, RequestAmountForm
 
-terminal = Blueprint('terminal', __name__, static_folder='static', template_folder='templates')
+terminal = Blueprint('terminal', __name__, template_folder=os.path.join(basedir, 'templates', 'terminal'))
 
 login_manager = LoginManager()
 
@@ -44,7 +46,7 @@ def registration_page():
     # POST
     if form.validate_on_submit():
         # TODO: try-catch this
-        initialise_user(username=form.username.data, password=form.password.data)
+        initialise_user(username=form.username.data, password=form.password.data, email=form.email.data)
         flash("Registration success! Please log in.")
         return redirect(url_for('.login_page'))
 

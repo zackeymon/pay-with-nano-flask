@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Pay</title>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="{{ url_for('pay.static', filename='qrcode.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/qrcode.min.js') }}"></script>
 </head>
 <body>
 <p>Pay {{ amount }} NANO to address {{ address }}</p>

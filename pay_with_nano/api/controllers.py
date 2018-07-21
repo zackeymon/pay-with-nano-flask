@@ -1,5 +1,3 @@
-from time import sleep
-
 import requests
 from flask import Blueprint, request, jsonify
 
@@ -35,3 +33,9 @@ def process_blocks():
         pass
 
     return 'success'
+
+
+@api.route('/callback', methods=['POST'])
+def callback():
+    print(request.get_data())
+    return 'thanks'

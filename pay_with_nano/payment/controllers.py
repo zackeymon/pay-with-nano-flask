@@ -1,9 +1,11 @@
-from flask import Blueprint, request, redirect, url_for, session
-from payment.services import payment_info_complete, render_handle_payment_page, render_payment_request_page, \
+import os
+from pay_with_nano import basedir
+from flask import Blueprint, request, redirect, url_for
+from pay_with_nano.payment.services import payment_info_complete, render_handle_payment_page, render_payment_request_page, \
     begin_payment_session, settle_payment
 from flask_login import current_user, login_required
 
-pay = Blueprint('pay', __name__, static_folder='static', template_folder='templates')
+pay = Blueprint('pay', __name__, template_folder=os.path.join(basedir, 'templates', 'payment'))
 
 
 @pay.route('/')

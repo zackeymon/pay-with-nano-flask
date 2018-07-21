@@ -1,14 +1,13 @@
 from time import sleep
-
 from flask import render_template
-from api.services import generate_uri, nano_to_raw
-from database import db
-from models import Transaction
-from payment.forms import PaymentForm
+
+from pay_with_nano.config import MASTER_WALLET_ID
+from pay_with_nano.core.rpc_services import nano_to_raw
+from pay_with_nano.database import db
+from pay_with_nano.core.models import Transaction
+from pay_with_nano.payment.forms import PaymentForm
 from nano import RPCClient
 from copy import deepcopy
-
-MASTER_WALLET_ID = '39A86A90379995AD2B9C539A24A28ECD889DCCAF29C4A2B43EB4EF483B71B50A'
 
 unsettled_payment_sessions = {}
 rpc = RPCClient()
@@ -45,8 +44,6 @@ def settle_payment(transaction_dict):
     if transition_address in unsettled_payment_sessions:
         receiving_user = unsettled_payment_sessions.pop(transition_address)
         transaction.user_id = receiving_user.id
-        db.session.add(transaction)
-        db.session.commit()
 
         if transaction.success:
             print("transfer fund in 10 seconds...")
@@ -60,4 +57,10 @@ def settle_payment(transaction_dict):
                 id=str(transaction.id)
             ))
 
+        db.session.add(transaction)
+        db.session.commit()
 
+
+def generate_uri(address, required_amount):
+    required_raw_amount = nano_to_raw(required_amount)
+    return "xrb:{address}?amount={raw_amount}".format(address=address, raw_amount=required_raw_amount)
