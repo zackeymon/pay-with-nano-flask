@@ -1,10 +1,13 @@
 import os
+
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+
 from pay_with_nano import basedir
-from pay_with_nano.terminal.services import validated, initialise_user
+from pay_with_nano.core import rpc_services
 from pay_with_nano.core.models import User
-from pay_with_nano.database import db
+from pay_with_nano.terminal.services import validated, initialise_user, change_receiving_address, get_user_transactions, \
+    get_transaction_from_id, can_refund
 from .forms import LoginForm, RegisterForm, ChangeAddressForm, RequestAmountForm
 
 terminal = Blueprint('terminal', __name__, template_folder=os.path.join(basedir, 'templates', 'terminal'))
@@ -57,18 +60,20 @@ def registration_page():
 @terminal.route('/dashboard')
 @login_required
 def dashboard():
-    form = RequestAmountForm()
     if current_user.receiving_address is None:
         flash('Please set a receiving address before continue')
         return redirect(url_for('.change_address'))
-    return render_template('dashboard.html', current_user=current_user, form=form)
+
+    form = RequestAmountForm()
+    transactions = get_user_transactions(current_user)
+    return render_template('dashboard.html', current_user=current_user, form=form, transactions=transactions)
 
 
 @terminal.route('/logout')
 @login_required
 def logout():
+    rpc_services.lock_wallet(current_user.wallet_id)
     logout_user()
-    # TODO: LOCK WALLET!
     flash('Successfully logged out!')
     return redirect(url_for('.login_page'))
 
@@ -85,10 +90,19 @@ def change_address():
 
     # POST
     if form.validate_on_submit():
-        current_user.receiving_address = form.new_address.data
-        db.session.commit()
+        change_receiving_address(current_user, form.new_address.data)
         flash("Address updated!")
         return redirect(url_for('.change_address'))
 
     # GET, form includes errors
     return render_template('change_address.html', form=form, current_user=current_user)
+
+
+@terminal.route('/start_refund')
+@login_required
+def start_refund():
+    transaction = get_transaction_from_id(request.args['transaction_id'])
+    if can_refund(current_user, transaction):
+        # refund(transaction)
+        return "Refunded"
+    return "Not authorised or not enough fund!"

@@ -4,14 +4,38 @@
 
 {% block content %}
     <p>Hello, {{ current_user.username }}</p>
-    <p><a href="{{ url_for('.change_address') }}">Change Receiving Address</a></p>
 
     <form action="{{ url_for('pay.start_payment') }}" method="POST">
-        <input id="receiving_address" name="receiving_address" type="hidden" value="{{ current_user.receiving_address }}">
+        <input id="receiving_address" name="receiving_address" type="hidden"
+               value="{{ current_user.receiving_address }}">
         {% for field in form %}
             {{ render_field(field) }}
         {% endfor %}
     </form>
 
+    <br/>
+
+    <table>
+        <tr>
+            <th>Time</th>
+            <th>From</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.timestamp }}</td>
+                <td>{{ transaction.from_address }}</td>
+                <td>{{ transaction.amount }}</td>
+                <td>{{ transaction.success }}</td>
+                <td><a href="{{ url_for('.start_refund') }}?transaction_id={{ transaction.id }}">Refund</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <br/>
+
+    <p><a href="{{ url_for('.change_address') }}">Change Receiving Address</a></p>
     <p><a href="{{ url_for('.logout') }}">log out</a></p>
 {% endblock %}

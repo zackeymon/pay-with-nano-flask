@@ -37,3 +37,14 @@ def lock_wallet(wallet_id):
 
 def change_wallet_password(wallet_id, password):
     return _rpc_client.password_change(wallet_id, password)
+
+
+# Send fund
+def send_nano(wallet_id, source, destination, amount_nano, send_id):
+    return _rpc_client.send(
+        wallet=wallet_id,
+        source=source,
+        destination=destination,
+        amount=int(nano_to_raw(amount_nano)),
+        id=send_id
+    )
