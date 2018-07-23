@@ -33,7 +33,7 @@ def required_amount_received(address, required_amount):
 
 
 def get_hash_and_sender(to_address, sent_raw_amount):
-    pending_blocks = rpc_services.get_pending_blocks_to_address(to_address)
+    pending_blocks = rpc_services.get_pending_blocks_for_address(to_address)
 
     for block_hash, block in pending_blocks.items():
         if block['amount'] == sent_raw_amount:

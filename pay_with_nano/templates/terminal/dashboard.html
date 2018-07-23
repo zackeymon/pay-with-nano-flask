@@ -3,8 +3,12 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <p>Hello, {{ current_user.username }}</p>
+    <h1>Yo, {{ current_user.username }}.</h1>
+    <p>Your refund address {{ current_user.refund_address }} contains <b>{{ refund_address_balance }} NANO</b></p>
 
+    <br/><br/>
+
+    <h2>Quick Request</h2>
     <form action="{{ url_for('pay.start_payment') }}" method="POST">
         <input id="receiving_address" name="receiving_address" type="hidden"
                value="{{ current_user.receiving_address }}">
@@ -13,8 +17,9 @@
         {% endfor %}
     </form>
 
-    <br/>
+    <br/><br/>
 
+    <h2>Transaction History</h2>
     <table>
         <tr>
             <th>Time</th>
@@ -34,7 +39,7 @@
         {% endfor %}
     </table>
 
-    <br/>
+    <br/><br/>
 
     <p><a href="{{ url_for('.change_address') }}">Change Receiving Address</a></p>
     <p><a href="{{ url_for('.logout') }}">log out</a></p>

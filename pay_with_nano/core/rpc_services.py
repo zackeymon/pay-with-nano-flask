@@ -13,7 +13,12 @@ def nano_to_raw(nano_amount):
 
 
 # Query database/ledger
-def get_pending_blocks_to_address(address):
+def get_balance_nano(address):
+    body = _rpc_client.account_balance(account=address)
+    return raw_to_nano(body["balance"] + body["pending"])
+
+
+def get_pending_blocks_for_address(address):
     pending_block_hashes = _rpc_client.accounts_pending([address])[address]
     return _rpc_client.blocks_info(pending_block_hashes)
 

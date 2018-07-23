@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from pay_with_nano.core import rpc_services
 from pay_with_nano.database import db
 from pay_with_nano.core.models import User, Transaction
@@ -50,5 +52,14 @@ def get_transaction_from_id(transaction_id):
 
 
 def can_refund(user, transaction):
-    # return transaction.user_id == user.id and transaction.amount <= rpc_services.get_balance(user.refund_address)
-    return True
+    return transaction.user_id == user.id and Decimal(transaction.amount) <= rpc_services.get_balance_nano(user.refund_address)
+
+
+def refund(user, transaction):
+    return rpc_services.send_nano(
+        wallet_id=user.wallet_id,
+        source=user.refund_address,
+        destination=transaction.from_address,
+        amount_nano=transaction.amount,
+        send_id='refund' + str(transaction.id)
+    )

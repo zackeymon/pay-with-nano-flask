@@ -6,8 +6,9 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from pay_with_nano import basedir
 from pay_with_nano.core import rpc_services
 from pay_with_nano.core.models import User
+from pay_with_nano.core.rpc_services import get_balance_nano
 from pay_with_nano.terminal.services import validated, initialise_user, change_receiving_address, get_user_transactions, \
-    get_transaction_from_id, can_refund
+    get_transaction_from_id, can_refund, refund
 from .forms import LoginForm, RegisterForm, ChangeAddressForm, RequestAmountForm
 
 terminal = Blueprint('terminal', __name__, template_folder=os.path.join(basedir, 'templates', 'terminal'))
@@ -66,7 +67,9 @@ def dashboard():
 
     form = RequestAmountForm()
     transactions = get_user_transactions(current_user)
-    return render_template('dashboard.html', current_user=current_user, form=form, transactions=transactions)
+    refund_address_balance = get_balance_nano(current_user.refund_address)
+    return render_template('dashboard.html', current_user=current_user, form=form, transactions=transactions,
+                           refund_address_balance=refund_address_balance)
 
 
 @terminal.route('/logout')
@@ -91,7 +94,7 @@ def change_address():
     # POST
     if form.validate_on_submit():
         change_receiving_address(current_user, form.new_address.data)
-        flash("Address updated!")
+        flash('Address updated!')
         return redirect(url_for('.change_address'))
 
     # GET, form includes errors
@@ -103,6 +106,9 @@ def change_address():
 def start_refund():
     transaction = get_transaction_from_id(request.args['transaction_id'])
     if can_refund(current_user, transaction):
-        # refund(transaction)
-        return "Refunded"
-    return "Not authorised or not enough fund!"
+        # TODO: receive blocks
+        if refund(current_user, transaction):
+            return 'Refunded'
+        return 'Unknown Error'
+
+    return 'Not authorised or not enough fund!'
