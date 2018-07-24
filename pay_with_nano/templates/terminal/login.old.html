@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Log in{% endblock %}
+
+{% block content %}
+    <form action="" method="POST">
+        {% for field in form %}
+            {{ render_field(field) }}
+        {% endfor %}
+    </form>
+    <a href="{{ url_for('.registration_page') }}">Register</a>
+{% endblock %}

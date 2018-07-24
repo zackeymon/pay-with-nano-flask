@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<form action="" method="POST">
+    {% for field in form %}
+        {{ render_field(field) }}
+    {% endfor %}
+</form>
+{% endblock %}

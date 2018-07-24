@@ -28,34 +28,35 @@ def load_user(user_id):
 
 @terminal.route('/login', methods=['GET', 'POST'])
 def login_page():
-    form = LoginForm(request.form)
+    login_form = LoginForm(request.form)
 
     # POST
-    if form.validate_on_submit():
-        if validated(username=form.username.data, password=form.password.data):
-            this_user = User.query.filter_by(username=form.username.data).first()
+    if login_form.validate_on_submit():
+        if validated(username=login_form.username.data, password=login_form.password.data):
+            this_user = User.query.filter_by(username=login_form.username.data).first()
             login_user(this_user)
             return redirect(url_for('.dashboard'))
         # 2nd validation failed
         flash('Wrong username or password!')
 
     # GET, form includes errors
-    return render_template('login.html', form=form)
+    register_form = RegisterForm()
+    return render_template('terminal/login.html', login_form=login_form)
 
 
 @terminal.route('/register', methods=['GET', 'POST'])
 def registration_page():
-    form = RegisterForm(request.form)
+    register_form = RegisterForm(request.form)
 
     # POST
-    if form.validate_on_submit():
+    if register_form.validate_on_submit():
         # TODO: try-catch this
-        initialise_user(username=form.username.data, password=form.password.data, email=form.email.data)
+        initialise_user(username=register_form.username.data, password=register_form.password.data, email=register_form.email.data)
         flash("Registration success! Please log in.")
         return redirect(url_for('.login_page'))
 
     # GET, form includes errors
-    return render_template('register.html', form=form)
+    return render_template('register.html', register_form=register_form)
 
 
 @terminal.route('/dashboard')
