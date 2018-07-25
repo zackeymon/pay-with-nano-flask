@@ -40,7 +40,6 @@ def login_page():
         flash('Wrong username or password!')
 
     # GET, form includes errors
-    register_form = RegisterForm()
     return render_template('terminal/login.html', login_form=login_form)
 
 

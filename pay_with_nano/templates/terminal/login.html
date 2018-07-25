@@ -3,49 +3,45 @@
 {% block title %} Login {% endblock title %}
 
 {% block stylesheets %}
-  {{ super() }}
-  <!-- Animate.css -->
-  <link href="{{ url_for('static', filename='vendors/animate.css/animate.min.css') }}" rel="stylesheet">
+    {{ super() }}
 {% endblock stylesheets %}
 
 {% block body_class %}login{% endblock body_class %}
 
 {% block body %}
     <div class="login_wrapper">
-      <div class="form">
-        <section class="login_content">
-          <form method="post">
-            <h1>Login Form</h1>
+        <div class="form">
+            <section class="login_content">
+                <form method="post">
+                    <h1>Login Form</h1>
 
-            {% for field in login_form if field.widget.input_type != 'hidden'  %}
-            <div>
-                {{ field(class="form-control", placeholder=field.label.text) }}
-            </div>
-            {% endfor %}
+                    {% for field in login_form %}
+                        {{ render_field(field) }}
+                    {% endfor %}
 
-            <div>
-            <button type="submit" class="btn btn-default submit" name="login">Log in</button>
-            <a class="reset_pass" href="#">Recover from seed TODO</a>
-            </div>
+                    <div>
+                        <button type="submit" class="btn btn-default submit" name="login">Log in</button>
+                        <a class="reset_pass" href="#">Recover from seed TODO</a>
+                    </div>
 
-            <div class="clearfix"></div>
+                    <div class="clearfix"></div>
 
-            <div class="separator">
-              <p class="change_link">New to site?
-                <a href="{{ url_for('.registration_page') }}" class="to_register"> Create Account </a>
-              </p>
+                    <div class="separator">
+                        <p class="change_link">New to site?
+                            <a href="{{ url_for('.registration_page') }}" class="to_register"> Create Account </a>
+                        </p>
 
-              <div class="clearfix"></div>
-              <br />
+                        <div class="clearfix"></div>
+                        <br/>
 
-              <div>
-                <h1><i class="fa fa-paw"></i> Pay with Nano</h1>
-                <p>©2016 All Rights Reserved.</p>
-              </div>
-            </div>
-          </form>
-        </section>
-      </div>
+                        <div>
+                            <h1><i class="fa fa-paw"></i> Pay with Nano</h1>
+                            <p>©2016 All Rights Reserved.</p>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </div>
     </div>
 {% endblock body %}
 

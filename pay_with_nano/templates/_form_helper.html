@@ -13,8 +13,8 @@
         {{ field(**kwargs) | safe }}
 
     {% else %}
-        <dt>{{ field.label }}
-        <dd>{{ field(placeholder=field.description, **kwargs) | safe }}
+        <div>
+            {{ field(class="form-control", placeholder=field.label.text, **kwargs) | safe }}
             {% if field.errors %}
                 <ul class=errors>
                     {% for error in field.errors %}
@@ -22,6 +22,6 @@
                     {% endfor %}
                 </ul>
             {% endif %}
-        </dd>
+        </div>
     {% endif %}
 {% endmacro %}

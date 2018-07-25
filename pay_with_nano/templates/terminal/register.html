@@ -4,24 +4,19 @@
 
 {% block stylesheets %}
   {{ super() }}
-  <!-- Animate.css -->
-  <link href="{{ url_for('static', filename='vendors/animate.css/animate.min.css') }}" rel="stylesheet">
 {% endblock stylesheets %}
 
 {% block body_class %}login{% endblock body_class %}
 
 {% block body %}
-
     <div class="login_wrapper">
       <div class="form">
         <section class="login_content">
           <form method="post">
             <h1>Create Account</h1>
 
-            {% for field in register_form if field.widget.input_type != 'hidden'  %}
-            <div>
-                {{ field(class="form-control", placeholder=field.label.text) }}
-            </div>
+            {% for field in register_form %}
+                {{ render_field(field) }}
             {% endfor %}
 
             <div>
