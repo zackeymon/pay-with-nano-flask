@@ -16,8 +16,7 @@ class RegisterForm(FlaskForm):
 
 
 class ChangeAddressForm(FlaskForm):
-    new_address = StringField("Address", description='xrb_', validators=[InputRequired()])
-    submit = SubmitField('Change')
+    new_address = StringField("New Address", description='xrb_', validators=[InputRequired()])
 
 
 class RequestAmountForm(FlaskForm):

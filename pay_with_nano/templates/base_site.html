@@ -1,4 +1,4 @@
-{% from "_form_helper.html" import render_field %}
+{% from "_helper.html" import render_field, render_label_field, display_flash_messages %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -41,16 +41,6 @@
 </head>
 
 <body class="{% block body_class %}nav-md {% endblock body_class %}">
-
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul class=flashes>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
 
 {% block body %}
     <div class="container body">

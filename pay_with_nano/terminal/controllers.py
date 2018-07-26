@@ -94,7 +94,7 @@ def change_address():
     # POST
     if form.validate_on_submit():
         change_receiving_address(current_user, form.new_address.data)
-        flash('Address updated!')
+        flash('Address updated!', 'success')
         return redirect(url_for('.change_address'))
 
     # GET, form includes errors
