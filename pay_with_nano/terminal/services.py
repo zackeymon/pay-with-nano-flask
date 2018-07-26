@@ -9,6 +9,7 @@ def validated(username, password):
     user = User.query.filter_by(username=username).first()
 
     if user and rpc_services.unlock_wallet(user.wallet_id, password):
+        rpc_services.lock_wallet(user.wallet_id)
         return True
 
     return False

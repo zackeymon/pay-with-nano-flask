@@ -100,8 +100,12 @@ def change_address():
 
     # POST
     if form.validate_on_submit():
-        change_receiving_address(current_user, form.new_address.data)
-        flash('Address updated!', 'success')
+        if validated(current_user.username, form.password.data):
+            change_receiving_address(current_user, form.new_address.data)
+            flash('Address updated!', 'success')
+        else:
+            flash('Wrong password! Address unchanged.', 'error')
+
         return redirect(url_for('.change_address'))
 
     # GET, form includes errors
