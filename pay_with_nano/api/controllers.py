@@ -19,7 +19,10 @@ def payment_received():
     transaction = services.make_transaction_response(address, amount)
 
     # TODO: change to task queue
-    requests.post('http://localhost:5000/api/process_blocks', json=transaction)
+    try:
+        requests.post("http://localhost:5000/api/process_blocks", json=transaction)
+    except requests.exceptions.ReadTimeout:
+        pass
 
     return jsonify(transaction)
 
@@ -28,7 +31,7 @@ def payment_received():
 def process_blocks():
     # process the pending blocks in the background
     try:
-        requests.post('http://localhost:5000/pay/finish_payment', json=request.get_json())
+        requests.post('http://localhost:5000/pay/finish_payment', json=request.get_json(), timeout=1.0)
     except requests.exceptions.RequestException:
         pass
 

@@ -61,5 +61,4 @@ def refund(user, transaction):
         source=user.refund_address,
         destination=transaction.from_address,
         amount_nano=transaction.amount,
-        send_id='refund' + str(transaction.id)
     )

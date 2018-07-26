@@ -1,4 +1,5 @@
 from nano import RPCClient, conversion
+import uuid
 
 _rpc_client = RPCClient()
 
@@ -10,6 +11,12 @@ def raw_to_nano(raw_amount):
 
 def nano_to_raw(nano_amount):
     return conversion.convert(nano_amount, from_unit="Mrai", to_unit="raw")
+
+
+# Generate URI
+def generate_uri(address, required_nano_amount):
+    required_raw_amount = nano_to_raw(required_nano_amount)
+    return "xrb:{address}?amount={raw_amount}".format(address=address, raw_amount=required_raw_amount)
 
 
 # Query database/ledger
@@ -45,11 +52,16 @@ def change_wallet_password(wallet_id, password):
 
 
 # Send fund
-def send_nano(wallet_id, source, destination, amount_nano, send_id):
+def send_nano(wallet_id, source, destination, amount_nano):
     return _rpc_client.send(
         wallet=wallet_id,
         source=source,
         destination=destination,
         amount=int(nano_to_raw(amount_nano)),
-        id=send_id
+        id=str(uuid.uuid4())
     )
+
+
+def payment_begin(wallet_id):
+    return _rpc_client.payment_begin(wallet_id)
+
