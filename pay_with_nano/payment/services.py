@@ -1,13 +1,13 @@
+from copy import deepcopy
 from time import sleep
+
 from flask import render_template
-import uuid
 
 from pay_with_nano.config import MASTER_WALLET_ID
 from pay_with_nano.core import rpc_services
-from pay_with_nano.database import db
 from pay_with_nano.core.models import Transaction
+from pay_with_nano.database import db
 from pay_with_nano.payment.forms import PaymentForm
-from copy import deepcopy
 
 unsettled_payment_sessions = {}
 
@@ -45,8 +45,8 @@ def settle_payment(transaction_dict):
         transaction.user_id = receiving_user.id
 
         if transaction.success:
-            print("transfer fund in 30 seconds...")
-            sleep(30)
+            print("transfer fund in 40 seconds...")
+            sleep(40)
             # Send fund to receiving address
             print(rpc_services.send_nano(
                 wallet_id=MASTER_WALLET_ID,

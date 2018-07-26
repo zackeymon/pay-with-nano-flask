@@ -21,8 +21,3 @@ db.create_all()
 app.register_blueprint(api, url_prefix='/api')
 app.register_blueprint(pay, url_prefix='/pay')
 app.register_blueprint(terminal)
-
-
-@app.route("/")
-def hello():
-    return "Hello World!"

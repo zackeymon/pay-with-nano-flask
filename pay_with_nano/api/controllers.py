@@ -31,7 +31,7 @@ def payment_received():
 def process_blocks():
     # process the pending blocks in the background
     try:
-        requests.post('http://localhost:5000/pay/finish_payment', json=request.get_json(), timeout=1.0)
+        requests.post('http://localhost:5000/pay/finish_payment', json=request.get_json(), timeout=0.0001)
     except requests.exceptions.RequestException:
         pass
 

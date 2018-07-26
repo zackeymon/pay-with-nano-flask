@@ -26,6 +26,13 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+@terminal.route('/')
+def home():
+    if current_user.is_authenticated:
+        return redirect(url_for('.dashboard'))
+    return redirect(url_for('.login_page'))
+
+
 @terminal.route('/login', methods=['GET', 'POST'])
 def login_page():
     login_form = LoginForm(request.form)
@@ -107,8 +114,9 @@ def start_refund():
     transaction = get_transaction_from_id(request.args['transaction_id'])
     if can_refund(current_user, transaction):
         # TODO: receive blocks
-        if refund(current_user, transaction):
+        block_hash = refund(current_user, transaction)
+        print(block_hash)
+        if block_hash:
             return 'Refunded'
         return 'Unknown Error'
-
     return 'Not authorised or not enough fund!'
