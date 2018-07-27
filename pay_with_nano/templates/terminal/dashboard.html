@@ -1,46 +1,125 @@
-{% extends "base.html" %}
+{% extends "base_site.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %} Dashboard {% endblock title %}
+
+{% block stylesheets %}
+    {{ super() }}
+{% endblock stylesheets %}
 
 {% block content %}
-    <h1>Yo, {{ current_user.username }}.</h1>
-    <p>Your refund address {{ current_user.refund_address }} contains <b>{{ refund_address_balance }} NANO</b></p>
+    <div class="right_col" role="main">
+        <div class="">
 
-    <br/><br/>
+            <div class="row top_tiles">
+                <div class="animated flipInY col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-money"></i></div>
+                        <div class="count">
+                            <abbr title="{{ current_user.receiving_address }}">
+                                {{ '%s...%s' | format(current_user.receiving_address[:11], current_user.receiving_address[-6:]) }}
+                            </abbr>
+                        </div>
+                        <h4>Receiving Address</h4>
+                        <p>Current balance: {{ receiving_address_balance }}</p>
+                        <a href="{{ url_for('.change_address') }}" class="btn btn-primary">Change address</a>
+                    </div>
+                </div>
+                <div class="animated flipInY col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="tile-stats">
+                        <div class="icon"><i class="fa fa-retweet"></i></div>
+                        <div class="count">
+                            <abbr title="{{ current_user.refund_address }}">
+                                {{ '%s...%s' | format(current_user.refund_address[:11], current_user.refund_address[-6:]) }}
+                            </abbr>
+                        </div>
+                        <h4>Refund Address</h4>
+                        <p>Current balance: {{ refund_address_balance }}</p>
+                        <a href="{{ url_for('.change_address') }}" class="btn btn-warning">Refund payment</a>
+                    </div>
+                </div>
+            </div>
 
-    <h2>Quick Request</h2>
-    <form action="{{ url_for('pay.start_payment') }}" method="POST">
-        <input id="receiving_address" name="receiving_address" type="hidden"
-               value="{{ current_user.receiving_address }}">
-        {% for field in form %}
-            {{ render_field(field) }}
-        {% endfor %}
-    </form>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Transaction Summary
+                                <small>Weekly progress</small>
+                            </h2>
+                            <div class="filter">
+                                <div id="reportrange" class="pull-right"
+                                     style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                    <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="demo-container" style="height:280px">
+                                    <div id="chart_plot_02" class="demo-placeholder"></div>
+                                </div>
+                                <div class="tiles">
+                                    <div class="col-md-4 tile">
+                                        <span>Total Sessions</span>
+                                        <h2>231,809</h2>
+                                        <span class="sparkline11 graph" style="height: 160px;">
+                         <canvas width="200" height="60"
+                                 style="display: inline-block; vertical-align: top; width: 94px; height: 30px;"></canvas>
+                    </span>
+                                    </div>
+                                    <div class="col-md-4 tile">
+                                        <span>Total Revenue</span>
+                                        <h2>$231,809</h2>
+                                        <span class="sparkline22 graph" style="height: 160px;">
+                          <canvas width="200" height="60"
+                                  style="display: inline-block; vertical-align: top; width: 94px; height: 30px;"></canvas>
+                    </span>
+                                    </div>
+                                    <div class="col-md-4 tile">
+                                        <span>Total Sessions</span>
+                                        <h2>231,809</h2>
+                                        <span class="sparkline11 graph" style="height: 160px;">
+                           <canvas width="200" height="60"
+                                   style="display: inline-block; vertical-align: top; width: 94px; height: 30px;"></canvas>
+                    </span>
+                                    </div>
+                                </div>
 
-    <br/><br/>
+                            </div>
 
-    <h2>Transaction History</h2>
-    <table>
-        <tr>
-            <th>Time</th>
-            <th>From</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-        {% for transaction in transactions %}
-            <tr>
-                <td>{{ transaction.timestamp }}</td>
-                <td>{{ transaction.from_address }}</td>
-                <td>{{ transaction.amount }}</td>
-                <td>{{ transaction.success }}</td>
-                <td><a href="{{ url_for('.start_refund') }}?transaction_id={{ transaction.id }}">Refund</a></td>
-            </tr>
-        {% endfor %}
-    </table>
 
-    <br/><br/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
-    <p><a href="{{ url_for('.change_address') }}">Change Receiving Address</a></p>
-    <p><a href="{{ url_for('.logout') }}">log out</a></p>
+{% block javascripts %}
+    {{ super() }}
+    <!-- Chart.js -->
+    <script src="{{ url_for('static', filename='vendors/Chart.js/dist/Chart.min.js') }}"></script>
+    <!-- gauge.js -->
+    <script src="{{ url_for('static', filename='vendors/gauge.js/dist/gauge.min.js') }}"></script>
+    <!-- Skycons -->
+    <script src="{{ url_for('static', filename='vendors/skycons/skycons.js') }}"></script>
+    <!-- Flot -->
+    <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.pie.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.time.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.stack.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.resize.js') }}"></script>
+    <!-- Flot plugins -->
+    <script src="{{ url_for('static', filename='vendors/flot.orderbars/js/jquery.flot.orderBars.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/flot-spline/js/jquery.flot.spline.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/flot.curvedlines/curvedLines.js') }}"></script>
+    <!-- DateJS -->
+    <script src="{{ url_for('static', filename='vendors/DateJS/build/date.js') }}"></script>
+    <!-- JQVMap -->
+    <script src="{{ url_for('static', filename='vendors/jqvmap/dist/jquery.vmap.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/jqvmap/examples/js/jquery.vmap.sampledata.js') }}"></script>
 {% endblock %}
