@@ -1,0 +1,79 @@
+{% extends "base_site.html" %}
+
+{% block title %}Change Receiving Address{% endblock %}
+
+{% block content %}
+    <div class="right_col" role="main">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                {{ display_flash_messages() }}
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Change Receiving Address</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+
+                        <h4>Current receiving address: {{ current_user.receiving_address }}</h4>
+
+                        <br/>
+                        <form method="post" data-parsley-validate class="form-horizontal form-label-left">
+                            {% for field in change_address_form %}
+                                {{ render_label_field(field) }}
+                            {% endfor %}
+
+                            <div class="ln_solid"></div>
+
+                            <div class="form-group">
+                                <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                    <a href="{{ url_for('.dashboard') }}" class="btn btn-primary"
+                                       type="button">Back</a>
+                                    <button type="submit" class="btn btn-success">Change</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                {{ display_flash_messages() }}
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Set New PIN</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+
+                        <h4>Current receiving address: {{ current_user.receiving_address }}</h4>
+
+                        <br/>
+                        <form method="post" data-parsley-validate class="form-horizontal form-label-left">
+                            {% for field in change_pin_form %}
+                                {{ render_label_field(field) }}
+                            {% endfor %}
+
+                            <div class="ln_solid"></div>
+
+                            <div class="form-group">
+                                <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                    <a href="{{ url_for('.dashboard') }}" class="btn btn-primary"
+                                       type="button">Back</a>
+                                    <button type="submit" class="btn btn-success">Change</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ super()}}
+  <!-- Parsley -->
+  <script src="{{ url_for('static', filename='vendors/parsleyjs/dist/parsley.min.js') }}"></script>
+{% endblock javascripts %}
+

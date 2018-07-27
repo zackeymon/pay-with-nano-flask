@@ -9,7 +9,7 @@ from pay_with_nano.core.models import User
 from pay_with_nano.core.rpc_services import get_balance_nano
 from pay_with_nano.terminal.services import validated, initialise_user, change_receiving_address, get_user_transactions, \
     get_transaction_from_id, can_refund, refund
-from .forms import LoginForm, RegisterForm, ChangeAddressForm, RequestAmountForm
+from .forms import LoginForm, RegisterForm, ChangeAddressForm
 
 terminal = Blueprint('terminal', __name__, template_folder=os.path.join(basedir, 'templates', 'terminal'))
 
@@ -33,6 +33,21 @@ def home():
     return redirect(url_for('.login_page'))
 
 
+@terminal.route('/register', methods=['GET', 'POST'])
+def registration_page():
+    register_form = RegisterForm(request.form)
+
+    # POST
+    if register_form.validate_on_submit():
+        # TODO: try-catch this
+        initialise_user(username=register_form.username.data, password=register_form.password.data, email=register_form.email.data)
+        flash('Registration success! Please log in.', 'success')
+        return redirect(url_for('.login_page'))
+
+    # GET, form includes errors
+    return render_template('register.html', register_form=register_form)
+
+
 @terminal.route('/login', methods=['GET', 'POST'])
 def login_page():
     login_form = LoginForm(request.form)
@@ -44,39 +59,10 @@ def login_page():
             login_user(this_user)
             return redirect(url_for('.dashboard'))
         # 2nd validation failed
-        flash('Wrong username or password!')
+        flash('Wrong username or password!', 'error')
 
     # GET, form includes errors
     return render_template('terminal/login.html', login_form=login_form)
-
-
-@terminal.route('/register', methods=['GET', 'POST'])
-def registration_page():
-    register_form = RegisterForm(request.form)
-
-    # POST
-    if register_form.validate_on_submit():
-        # TODO: try-catch this
-        initialise_user(username=register_form.username.data, password=register_form.password.data, email=register_form.email.data)
-        flash("Registration success! Please log in.")
-        return redirect(url_for('.login_page'))
-
-    # GET, form includes errors
-    return render_template('register.html', register_form=register_form)
-
-
-@terminal.route('/dashboard')
-@login_required
-def dashboard():
-    if current_user.receiving_address is None:
-        flash('Please set a receiving address before continue')
-        return redirect(url_for('.change_address'))
-
-    form = RequestAmountForm()
-    transactions = get_user_transactions(current_user)
-    refund_address_balance = get_balance_nano(current_user.refund_address)
-    return render_template('dashboard.html', current_user=current_user, form=form, transactions=transactions,
-                           refund_address_balance=refund_address_balance)
 
 
 @terminal.route('/logout')
@@ -84,16 +70,31 @@ def dashboard():
 def logout():
     rpc_services.lock_wallet(current_user.wallet_id)
     logout_user()
-    flash('Successfully logged out!')
+    flash('Successfully logged out!', 'success')
     return redirect(url_for('.login_page'))
 
 
-@terminal.route('/debug')
-def debug():
-    return current_user.username + current_user.wallet_id
+@terminal.route('/dashboard')
+@login_required
+def dashboard():
+    if current_user.receiving_address is None:
+        flash('Please set a receiving address before continue', 'warning')
+        return redirect(url_for('.change_address'))
+
+    transactions = get_user_transactions(current_user)
+    receiving_address_balance = get_balance_nano(current_user.receiving_address)
+    refund_address_balance = get_balance_nano(current_user.refund_address)
+    return render_template('dashboard.html', current_user=current_user, transactions=transactions,
+                           refund_address_balance=refund_address_balance, receiving_address_balance=receiving_address_balance)
 
 
-@terminal.route('/change_address', methods=['GET', 'POST'])
+@terminal.route('/history')
+@login_required
+def transaction_history():
+    pass
+
+
+@terminal.route('/change_address', methods=['POST'])
 @login_required
 def change_address():
     form = ChangeAddressForm(request.form)
@@ -108,8 +109,10 @@ def change_address():
 
         return redirect(url_for('.change_address'))
 
-    # GET, form includes errors
-    return render_template('change_address.html', form=form, current_user=current_user)
+    # form includes errors
+    return render_template('terminal/settings.html', form=form, current_user=current_user)
+
+
 
 
 @terminal.route('/start_refund')

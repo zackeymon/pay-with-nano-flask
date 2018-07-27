@@ -11,8 +11,10 @@ class LoginForm(FlaskForm):
 class RegisterForm(FlaskForm):
     username = StringField('Username', description='username', validators=[InputRequired(), Length(min=4, max=20)])
     email = StringField('Email', description='joe@blogg.com', validators=[InputRequired(), Length(min=4, max=32)])
-    password = PasswordField('Password', description='********', validators=[InputRequired(), Length(min=4, max=32), EqualTo('re_password')])
-    re_password = PasswordField('Repeat Password', description='********', validators=[InputRequired(), Length(min=4, max=32), EqualTo('password')])
+    password = PasswordField('Password', description='********',
+                             validators=[InputRequired(), Length(min=4, max=32), EqualTo('re_password')])
+    re_password = PasswordField('Repeat Password', description='********',
+                                validators=[InputRequired(), Length(min=4, max=32), EqualTo('password')])
 
 
 class ChangeAddressForm(FlaskForm):
@@ -20,6 +22,9 @@ class ChangeAddressForm(FlaskForm):
     password = PasswordField('Password', description='********', validators=[InputRequired(), Length(min=4, max=32)])
 
 
-class RequestAmountForm(FlaskForm):
-    amount = DecimalField('Amount', description='0.0')
-    submit = SubmitField('Request')
+class ChangePinForm(FlaskForm):
+    pin = PasswordField('PIN', description='****',
+                        validators=[InputRequired(), Length(min=4, max=4), EqualTo('re_pin')])
+    re_pin = PasswordField('Repeat PIN', description='****',
+                           validators=[InputRequired(), Length(min=4, max=4), EqualTo('pin')])
+    password = PasswordField('Password', description='********', validators=[InputRequired(), Length(min=4, max=32)])
