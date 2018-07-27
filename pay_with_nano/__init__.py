@@ -1,7 +1,8 @@
 import os
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-from flask import Flask
+from flask import Flask, render_template
 from pay_with_nano.database import db
 from pay_with_nano.config import SQLALCHEMY_DATABASE_URI
 from pay_with_nano.api.controllers import api
@@ -21,3 +22,23 @@ db.create_all()
 app.register_blueprint(api, url_prefix='/api')
 app.register_blueprint(pay, url_prefix='/pay')
 app.register_blueprint(terminal)
+
+
+@app.errorhandler(401)
+def unauthorised(e):
+    return render_template('errors/page_401.html'), 401
+
+
+@app.errorhandler(403)
+def forbidden(e):
+    return render_template('errors/page_403.html'), 403
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('errors/page_404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('errors/page_500.html'), 500

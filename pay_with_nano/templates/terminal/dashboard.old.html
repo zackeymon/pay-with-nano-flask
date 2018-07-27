@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h1>Yo, {{ current_user.username }}.</h1>
+    <p>Your refund address {{ current_user.refund_address }} contains <b>{{ refund_address_balance }} NANO</b></p>
+
+    <br/><br/>
+
+    <h2>Quick Request</h2>
+    <form action="{{ url_for('pay.start_payment') }}" method="POST">
+        <input id="receiving_address" name="receiving_address" type="hidden"
+               value="{{ current_user.receiving_address }}">
+        {% for field in form %}
+            {{ render_field(field) }}
+        {% endfor %}
+    </form>
+
+    <br/><br/>
+
+    <h2>Transaction History</h2>
+    <table>
+        <tr>
+            <th>Time</th>
+            <th>From</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.timestamp }}</td>
+                <td>{{ transaction.from_address }}</td>
+                <td>{{ transaction.amount }}</td>
+                <td>{{ transaction.success }}</td>
+                <td><a href="{{ url_for('.start_refund') }}?transaction_id={{ transaction.id }}">Refund</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <br/><br/>
+
+    <p><a href="{{ url_for('.change_address') }}">Change Receiving Address</a></p>
+    <p><a href="{{ url_for('.logout') }}">log out</a></p>
+{% endblock %}
