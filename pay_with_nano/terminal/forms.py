@@ -23,7 +23,7 @@ class ChangeAddressForm(FlaskForm):
 
 
 class ChangePinForm(FlaskForm):
-    pin = PasswordField('PIN', description='****',
+    pin = PasswordField('New PIN', description='****',
                         validators=[InputRequired(), Length(min=4, max=4), EqualTo('re_pin')])
     re_pin = PasswordField('Repeat PIN', description='****',
                            validators=[InputRequired(), Length(min=4, max=4), EqualTo('pin')])

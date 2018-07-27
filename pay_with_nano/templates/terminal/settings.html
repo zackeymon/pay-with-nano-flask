@@ -13,7 +13,7 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-
+                        <h4>This is where the payments will be sent to. You should control the account.</h4>
                         <h4>Current receiving address: {{ current_user.receiving_address }}</h4>
 
                         <br/>
@@ -28,7 +28,7 @@
                                 <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
                                     <a href="{{ url_for('.dashboard') }}" class="btn btn-primary"
                                        type="button">Back</a>
-                                    <button type="submit" class="btn btn-success">Change</button>
+                                    <button type="submit" name="address_submit" class="btn btn-success">Change</button>
                                 </div>
                             </div>
                         </form>
@@ -38,7 +38,6 @@
         </div>
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
-                {{ display_flash_messages() }}
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Set New PIN</h2>
@@ -46,7 +45,7 @@
                     </div>
                     <div class="x_content">
 
-                        <h4>Current receiving address: {{ current_user.receiving_address }}</h4>
+                        <h4>The PIN is used to initiate a payment request at the Point-of-Sale.</h4>
 
                         <br/>
                         <form method="post" data-parsley-validate class="form-horizontal form-label-left">
@@ -60,7 +59,7 @@
                                 <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
                                     <a href="{{ url_for('.dashboard') }}" class="btn btn-primary"
                                        type="button">Back</a>
-                                    <button type="submit" class="btn btn-success">Change</button>
+                                    <button type="submit" name="pin_submit" class="btn btn-success">Change</button>
                                 </div>
                             </div>
                         </form>

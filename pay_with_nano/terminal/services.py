@@ -44,6 +44,11 @@ def change_receiving_address(user, new_address):
     db.session.commit()
 
 
+def change_pin(user, new_pin):
+    user.pin = new_pin
+    db.session.commit()
+
+
 def get_user_transactions(user):
     return Transaction.query.filter(Transaction.user_id == user.id).all()[::-1]
 
@@ -53,7 +58,8 @@ def get_transaction_from_id(transaction_id):
 
 
 def can_refund(user, transaction):
-    return transaction.user_id == user.id and Decimal(transaction.amount) <= rpc_services.get_balance_nano(user.refund_address)
+    return transaction.user_id == user.id and Decimal(transaction.amount) <= rpc_services.get_balance_nano(
+        user.refund_address)
 
 
 def refund(user, transaction):

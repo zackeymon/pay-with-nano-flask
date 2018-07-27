@@ -21,7 +21,7 @@
                         </div>
                         <h4>Receiving Address</h4>
                         <p>Current balance: {{ receiving_address_balance }}</p>
-                        <a href="{{ url_for('.change_address') }}" class="btn btn-primary">Change address</a>
+                        <a href="{{ url_for('.settings') }}" class="btn btn-primary">Change address</a>
                     </div>
                 </div>
                 <div class="animated flipInY col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -34,7 +34,7 @@
                         </div>
                         <h4>Refund Address</h4>
                         <p>Current balance: {{ refund_address_balance }}</p>
-                        <a href="{{ url_for('.change_address') }}" class="btn btn-warning">Refund payment</a>
+                        <a href="{{ url_for('.transaction_history') }}" class="btn btn-warning">Refund payment</a>
                     </div>
                 </div>
             </div>

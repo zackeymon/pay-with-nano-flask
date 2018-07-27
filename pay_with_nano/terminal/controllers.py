@@ -1,4 +1,5 @@
 import os
+from functools import wraps
 
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -8,8 +9,8 @@ from pay_with_nano.core import rpc_services
 from pay_with_nano.core.models import User
 from pay_with_nano.core.rpc_services import get_balance_nano
 from pay_with_nano.terminal.services import validated, initialise_user, change_receiving_address, get_user_transactions, \
-    get_transaction_from_id, can_refund, refund
-from .forms import LoginForm, RegisterForm, ChangeAddressForm
+    get_transaction_from_id, can_refund, refund, change_pin
+from .forms import LoginForm, RegisterForm, ChangeAddressForm, ChangePinForm
 
 terminal = Blueprint('terminal', __name__, template_folder=os.path.join(basedir, 'templates', 'terminal'))
 
@@ -26,6 +27,15 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+def full_info_required(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if current_user.pin is None or current_user.receiving_address is None:
+            return redirect(url_for('.settings'))
+        return func(*args, **kwargs)
+    return decorated_view
+
+
 @terminal.route('/')
 def home():
     if current_user.is_authenticated:
@@ -40,7 +50,8 @@ def registration_page():
     # POST
     if register_form.validate_on_submit():
         # TODO: try-catch this
-        initialise_user(username=register_form.username.data, password=register_form.password.data, email=register_form.email.data)
+        initialise_user(username=register_form.username.data, password=register_form.password.data,
+                        email=register_form.email.data)
         flash('Registration success! Please log in.', 'success')
         return redirect(url_for('.login_page'))
 
@@ -76,43 +87,59 @@ def logout():
 
 @terminal.route('/dashboard')
 @login_required
+@full_info_required
 def dashboard():
-    if current_user.receiving_address is None:
-        flash('Please set a receiving address before continue', 'warning')
-        return redirect(url_for('.change_address'))
-
     transactions = get_user_transactions(current_user)
     receiving_address_balance = get_balance_nano(current_user.receiving_address)
     refund_address_balance = get_balance_nano(current_user.refund_address)
     return render_template('dashboard.html', current_user=current_user, transactions=transactions,
-                           refund_address_balance=refund_address_balance, receiving_address_balance=receiving_address_balance)
+                           refund_address_balance=refund_address_balance,
+                           receiving_address_balance=receiving_address_balance)
 
 
 @terminal.route('/history')
 @login_required
+@full_info_required
 def transaction_history():
-    pass
+    return 'gg'
 
 
-@terminal.route('/change_address', methods=['POST'])
+@terminal.route('/settings', methods=['GET', 'POST'])
 @login_required
-def change_address():
-    form = ChangeAddressForm(request.form)
+def settings():
+    change_address_form = ChangeAddressForm()
+    change_pin_form = ChangePinForm()
 
-    # POST
-    if form.validate_on_submit():
-        if validated(current_user.username, form.password.data):
-            change_receiving_address(current_user, form.new_address.data)
+    # change_address_form logic
+    if 'address_submit' in request.form and change_address_form.validate():
+        print("address")
+        if validated(current_user.username, change_address_form.password.data):
+            change_receiving_address(current_user, change_address_form.new_address.data)
             flash('Address updated!', 'success')
         else:
             flash('Wrong password! Address unchanged.', 'error')
 
-        return redirect(url_for('.change_address'))
+        return redirect(url_for('.settings'))
 
-    # form includes errors
-    return render_template('terminal/settings.html', form=form, current_user=current_user)
+    # change_pin_form logic
+    if 'pin_submit' in request.form and change_pin_form.validate():
+        print("PIN")
+        if validated(current_user.username, change_pin_form.password.data):
+            change_pin(current_user, str(change_pin_form.pin.data))
+            flash('PIN set!', 'success')
+        else:
+            flash('Wrong password! PIN unchanged.', 'error')
 
+        return redirect(url_for('.settings'))
 
+    if current_user.receiving_address is None:
+        flash('Please specify a receiving address before continue.', 'warning')
+    if current_user.pin is None:
+        flash('Please set a PIN before continue.', 'warning')
+
+    # form includes validation errors
+    return render_template('terminal/settings.html', change_address_form=change_address_form,
+                           change_pin_form=change_pin_form, current_user=current_user)
 
 
 @terminal.route('/start_refund')
