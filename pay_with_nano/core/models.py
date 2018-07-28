@@ -1,19 +1,27 @@
 from flask_login import UserMixin
-
 from pay_with_nano.database import db
+from sqlalchemy_utils.types.choice import ChoiceType
 
 
 class Transaction(db.Model):
+    STATUSES = [
+        ('success', 'Success'),
+        ('cancelled', 'Cancelled'),
+        ('timeout', 'Timeout'),
+        ('refunded', 'Refunded')
+    ]
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
     timestamp = db.Column(db.String(20))
-    success = db.Column(db.Boolean)
-    from_address = db.Column(db.String(80))
-    to_address = db.Column(db.String(80))
-    amount = db.Column(db.String(20))
+    status = db.Column(ChoiceType(STATUSES))
+    source = db.Column(db.String(80))
+    destination = db.Column(db.String(80))
+    amount_nano = db.Column(db.String(20))
     hash = db.Column(db.String(80))
 
-    # TODO: primary currency
+    currency = db.Column(db.String(4))
+    amount = db.Column(db.String(20))
 
     def __init__(self, **kwargs):
         super(Transaction, self).__init__(**kwargs)

@@ -33,6 +33,7 @@ def full_info_required(func):
         if current_user.pin is None or current_user.receiving_address is None:
             return redirect(url_for('.settings'))
         return func(*args, **kwargs)
+
     return decorated_view
 
 
@@ -56,7 +57,7 @@ def registration_page():
         return redirect(url_for('.login_page'))
 
     # GET, form includes errors
-    return render_template('register.html', register_form=register_form)
+    return render_template('terminal/register.html', register_form=register_form)
 
 
 @terminal.route('/login', methods=['GET', 'POST'])
@@ -89,10 +90,9 @@ def logout():
 @login_required
 @full_info_required
 def dashboard():
-    transactions = get_user_transactions(current_user)
     receiving_address_balance = get_balance_nano(current_user.receiving_address)
     refund_address_balance = get_balance_nano(current_user.refund_address)
-    return render_template('dashboard.html', current_user=current_user, transactions=transactions,
+    return render_template('terminal/dashboard.html', current_user=current_user,
                            refund_address_balance=refund_address_balance,
                            receiving_address_balance=receiving_address_balance)
 
@@ -101,7 +101,8 @@ def dashboard():
 @login_required
 @full_info_required
 def transaction_history():
-    return 'gg'
+    transactions = get_user_transactions(current_user)
+    return render_template('terminal/transaction_history.html', transactions=transactions)
 
 
 @terminal.route('/settings', methods=['GET', 'POST'])
