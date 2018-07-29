@@ -29,13 +29,13 @@ def render_handle_payment_page(arguments):
 
 
 def render_payment_request_page(arguments):
-    form = PaymentForm(csrf_enabled=False)
+    payment_form = PaymentForm(csrf_enabled=False)
     live_price_dict = live_price_services.get_nano_live_prices()
 
     if 'address' in arguments:
-        form.address.data = arguments['address']
+        payment_form.address.data = arguments['address']
 
-    return render_template('create_payment.html', form=form, live_price_dict=live_price_dict)
+    return render_template('create_payment.html', payment_form=payment_form, live_price_dict=live_price_dict)
 
 
 def begin_payment_session(user, currency, amount):

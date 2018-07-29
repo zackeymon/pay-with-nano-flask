@@ -1,0 +1,16 @@
+{% from "_helper.html" import render_field %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pay</title>
+</head>
+<body>
+<form action="" method="GET">
+    {% for field in form %}
+        {{ render_field(field) }}
+    {% endfor %}
+</form>
+</body>
+</html>

@@ -1,16 +1,53 @@
-{% from "_helper.html" import render_field %}
+{% extends "base_site.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Pay</title>
-</head>
-<body>
-<form action="" method="GET">
-    {% for field in form %}
-        {{ render_field(field) }}
-    {% endfor %}
-</form>
-</body>
-</html>
+{% block title %} Quick Pay Request {% endblock title %}
+
+{% block stylesheets %}
+    {{ super() }}
+{% endblock stylesheets %}
+
+{% block body_class %}login{% endblock body_class %}
+
+{% block body %}
+    <div class="login_wrapper">
+        <div class="form">
+            <section class="login_content">
+                <div class="form-wrapper">
+                    {{ display_flash_messages() }}
+                    <form class="form-horizontal form-label-left" method="get">
+                        <h1>New Payment</h1>
+                        <p id="live_price">-</p>
+
+                        {% for field in payment_form %}
+                            {{ render_payment_form_field(field, onChange="handleChange()") }}
+                        {% endfor %}
+
+                        <div>
+                            <button type="submit" class="btn btn-success btn-lg submit" name="request_payment">
+                                <i class="fa fa-credit-card" aria-hidden="true"></i>
+                                Request Payment
+                            </button>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        function handleChange() {
+            const live_prices = {{ live_price_dict | safe }};
+            const select = document.getElementById("currency");
+            const currency = select.options[select.selectedIndex].text;
+            const live_price_text = document.getElementById("live_price")
+            if (currency === "NANO")
+                live_price_text.innerText = "-";
+            else
+                live_price_text.innerText = "1 NANO = " + live_prices[currency] + " " + currency;
+        }
+    </script>
+{% endblock body %}
+

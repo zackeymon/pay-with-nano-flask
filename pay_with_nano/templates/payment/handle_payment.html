@@ -27,13 +27,10 @@
                                 <h4>Waiting for payment...<span id="countdown">120</span></h4>
                             </div>
                         </div>
-                        <a style="visibility: hidden" href="{{ url_for('.merchant_payment_page') }}"
-                           class="btn btn-default btn-lg submit" id="ok-btn"
-                           name="OK">
+                        <a style="visibility: hidden" onclick="goBack()"
+                           class="btn btn-default btn-lg submit" id="ok-btn" name="OK">
                             OK
                         </a>
-                        {#                        <h2><a href="https://www.nanode.co/block/{{ block_hash }}" target="_blank">View#}
-                        {#                            transaction.</a></h2>#}
 
                     </form>
                 </div>
@@ -51,7 +48,7 @@
                     document.getElementById("status").innerHTML = `
                         <i class="fa fa-5x fa-check-circle" style="color: #26B99A; margin-bottom: 10px;" aria-hidden="true"></i>
                         <p>Payment received from: ${result.data.source}</p>
-                        <p>Block Hash: <a href='https://www.nanode.co/block/${result.data.hash}'>${result.data.hash}</a></p>
+                        <p>Block Hash: <a href='https://www.nanode.co/block/${result.data.hash}' target="_blank">${result.data.hash}</a></p>
                     `;
                 } else {
                     document.getElementById("status").innerHTML = `
@@ -80,6 +77,10 @@
             if (timeleft <= 0)
                 clearInterval(timer);
         }, 1000);
+
+        function goBack() {
+            window.history.back();
+        }
     </script>
 {% endblock body %}
 
