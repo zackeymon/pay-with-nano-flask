@@ -1,0 +1,39 @@
+{% extends "base_site.html" %}
+
+{% block title %} Point-of-Sale {% endblock title %}
+
+{% block stylesheets %}
+    {{ super() }}
+{% endblock stylesheets %}
+
+{% block body_class %}login{% endblock body_class %}
+
+{% block body %}
+    <div class="login_wrapper">
+        <div class="form">
+            <section class="login_content">
+                <div class="form-wrapper">
+                    {{ display_flash_messages() }}
+                    <form class="form-horizontal form-label-left" method="post">
+                        <h1>New Payment</h1>
+
+                        {% for field in merchant_request_form %}
+                            {{ render_payment_form_field(field) }}
+                        {% endfor %}
+
+                        <div>
+                            <button type="submit" class="btn btn-success btn-lg submit" name="request_payment">
+                                <i class="fa fa-credit-card" aria-hidden="true"></i>
+                                Request Payment
+                            </button>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock body %}
+

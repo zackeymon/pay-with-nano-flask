@@ -31,20 +31,22 @@ def render_payment_request_page(arguments):
     return render_template('create_payment.html', form=form)
 
 
-def begin_payment_session(user):
+def begin_payment_session(user, currency, amount):
     transition_address = rpc_services.payment_begin(MASTER_WALLET_ID)
-    unsettled_payment_sessions[transition_address] = deepcopy(user)
+    unsettled_payment_sessions[transition_address] = dict(user=deepcopy(user), currency=currency, amount=str(amount))
     return transition_address
 
 
 def settle_payment(transaction_dict):
     transaction = Transaction(**transaction_dict)
-    transition_address = transaction.to_address
-    if transition_address in unsettled_payment_sessions:
-        receiving_user = unsettled_payment_sessions.pop(transition_address)
-        transaction.user_id = receiving_user.id
+    transition_address = transaction.destination
 
-        if transaction.success:
+    if transition_address in unsettled_payment_sessions:
+        # A merchant payment
+        additional_transaction_info = unsettled_payment_sessions.pop(transition_address)
+        receiving_user = additional_transaction_info['user']
+
+        if transaction.status == 'success':
             print("transfer fund in 40 seconds...")
             sleep(40)
             # Send fund to receiving address
@@ -52,10 +54,17 @@ def settle_payment(transaction_dict):
                 wallet_id=MASTER_WALLET_ID,
                 source=transition_address,
                 destination=receiving_user.receiving_address,
-                amount_nano=transaction.amount
+                amount_nano=transaction.amount_nano
             ))
+
+        transaction.user_id = receiving_user.id
+        transaction.currency = additional_transaction_info['currency']
+        transaction.amount = additional_transaction_info['amount']
 
         db.session.add(transaction)
         db.session.commit()
 
+
+def convert_to_nano(currency, amount):
+    return '0.0001'
 

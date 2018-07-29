@@ -19,7 +19,7 @@
     axios.get("http://localhost:5000/api/payment_received?address={{ address }}&amount={{ amount }}")
         .then(result => {
             console.log("Response Status: " + result.status);
-            if (result.data.success === true) {
+            if (result.data.status === "success") {
                 document.getElementById("status").innerHTML =
                     `<p>Payment received from: ${result.data.from_address}</p>
                  <p>Block Hash: <a href='https://www.nanode.co/block/${result.data.hash}'>${result.data.hash}</a></p>`;

@@ -24,6 +24,36 @@
     {% endif %}
 {% endmacro %}
 
+{% macro render_payment_form_field(field) %}
+    {% if field.type == 'CSRFTokenField' %}
+        {{ field }}
+
+        {% if field.errors %}
+            <div class="warning">You have submitted an invalid CSRF token</div>
+        {% endif %}
+
+    {% elif field.type == 'HiddenField' %}
+        {{ field(**kwargs) | safe }}
+
+    {% elif field.type == 'SubmitField' %}
+        {{ field(**kwargs) | safe }}
+    {% else %}
+        <div class="form-group">
+                <label for="{{ field.name }}">
+                    {{ field.label.text }}
+                </label>
+                {{ field(class="form-control", placeholder=field.description, **kwargs) | safe }}
+                <ul class="errors">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+        </div>
+
+    {% endif %}
+{% endmacro %}
+
+
 {% macro render_label_field(field) %}
     {% if field.type == 'CSRFTokenField' %}
         {{ field }}
@@ -57,18 +87,18 @@
 
 {% macro display_flash_messages() %}
     <div>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    {% if category == 'message' %}
-                        <div class="alert alert-info" role="alert">
-                    {% else %}
-                        <div class="alert alert-{{ category }}" role="alert">
-                    {% endif %}
-                    {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'message' %}
+                    <div class="alert alert-info" role="alert">
+                {% else %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                {% endif %}
+            {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
 {% endmacro %}

@@ -23,6 +23,7 @@
 
             <div class="row">
                 <div class="col-md-12 col-sm-12 col-xs-12">
+                    {{ display_flash_messages() }}
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Transaction History</h2>
@@ -51,17 +52,17 @@
                                         <td>{{ transaction.timestamp }}</td>
                                         <td>{{ transaction.source }}</td>
                                         <td>{{ transaction.amount_nano }}</td>
-                                        <td>{{ transaction.currency }}</td>
+                                        <td>{{ transaction.currency.value }}</td>
                                         <td>{{ transaction.amount }}</td>
                                         <td>{{ transaction.status.value }}</td>
 
                                         <td>
                                             <div class="btn-group" role="group">
                                             {% if transaction.status == 'success' or transaction.status == 'refunded' %}
-                                                <a href="" type="button" class="btn btn-xs btn-default">View</a>
+                                                <a href="https://www.nanode.co/block/{{ transaction.hash }}" target="_blank" type="button" class="btn btn-xs btn-default">View</a>
                                             {% endif %}
                                             {% if transaction.status == 'success' %}
-                                                <a href="{{ url_for('.start_refund') }}?transaction_id={{ transaction.id }}"
+                                                <a href="{{ url_for('.confirm_refund') }}?transaction_id={{ transaction.id }}"
                                                    type="button" class="btn btn-xs btn-warning">Refund</a>
                                             {% endif %}
                                             </div>

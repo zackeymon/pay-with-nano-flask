@@ -11,20 +11,38 @@ class Transaction(db.Model):
         ('refunded', 'Refunded')
     ]
 
+    SUPPORTED_CURRENCIES = [
+        ('nano', 'NANO'),
+        ('usd', 'USD')
+    ]
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
-    timestamp = db.Column(db.String(20))
-    status = db.Column(ChoiceType(STATUSES))
-    source = db.Column(db.String(80))
     destination = db.Column(db.String(80))
-    amount_nano = db.Column(db.String(20))
-    hash = db.Column(db.String(80))
 
-    currency = db.Column(db.String(4))
+    timestamp = db.Column(db.String(20))
+    source = db.Column(db.String(80))
+    amount_nano = db.Column(db.String(20))
+    currency = db.Column(ChoiceType(SUPPORTED_CURRENCIES))
     amount = db.Column(db.String(20))
+    status = db.Column(ChoiceType(STATUSES))
+    hash = db.Column(db.String(80))
 
     def __init__(self, **kwargs):
         super(Transaction, self).__init__(**kwargs)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'timestamp': self.timestamp,
+            'status': self.status,
+            'source': self.source,
+            'destination': self.destination,
+            'amount_nano': self.amount_nano,
+            'hash': self.hash
+        }
 
 
 class User(db.Model, UserMixin):

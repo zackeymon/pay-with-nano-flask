@@ -16,13 +16,9 @@ def payment_received():
     address = request.args['address']
     amount = request.args['amount']
 
-    transaction = services.make_transaction_response(address, amount)
+    transaction = services.make_transaction_response(address, amount).serialize
 
-    # TODO: change to task queue
-    try:
-        requests.post("http://localhost:5000/api/process_blocks", json=transaction)
-    except requests.exceptions.ReadTimeout:
-        pass
+    requests.post("http://localhost:5000/api/process_blocks", json=transaction)
 
     return jsonify(transaction)
 

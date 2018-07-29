@@ -10,7 +10,7 @@ from pay_with_nano.core.models import User
 from pay_with_nano.core.rpc_services import get_balance_nano
 from pay_with_nano.terminal.services import validated, initialise_user, change_receiving_address, get_user_transactions, \
     get_transaction_from_id, can_refund, refund, change_pin
-from .forms import LoginForm, RegisterForm, ChangeAddressForm, ChangePinForm
+from .forms import LoginForm, RegisterForm, ChangeAddressForm, ChangePinForm, RefundForm
 
 terminal = Blueprint('terminal', __name__, template_folder=os.path.join(basedir, 'templates', 'terminal'))
 
@@ -105,6 +105,13 @@ def transaction_history():
     return render_template('terminal/transaction_history.html', transactions=transactions)
 
 
+@terminal.route('/launch_pos')
+@login_required
+@full_info_required
+def launch_pos():
+    return redirect(url_for('pay.merchant_payment_page'))
+
+
 @terminal.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
@@ -143,15 +150,24 @@ def settings():
                            change_pin_form=change_pin_form, current_user=current_user)
 
 
-@terminal.route('/start_refund')
+@terminal.route('/confirm_refund', methods=['GET', 'POST'])
 @login_required
-def start_refund():
+@full_info_required
+def confirm_refund():
+    refund_form = RefundForm()
     transaction = get_transaction_from_id(request.args['transaction_id'])
+
+    if refund_form.validate_on_submit():
+        if validated(current_user.username, refund_form.password.data):
+            # TODO: receive blocks
+            block_hash = refund(current_user, refund_form.password.data, transaction)
+            if block_hash:
+                return render_template('terminal/refund_complete.html', block_hash=block_hash)
+            flash('Unknown Error :o', 'error')
+        else:
+            flash('Wrong password!', 'error')
     if can_refund(current_user, transaction):
-        # TODO: receive blocks
-        block_hash = refund(current_user, transaction)
-        print(block_hash)
-        if block_hash:
-            return 'Refunded'
-        return 'Unknown Error'
-    return 'Not authorised or not enough fund!'
+        return render_template('terminal/refund_confirmation.html', refund_form=refund_form, transaction=transaction)
+
+    flash('You cannot refund this transaction. Insufficient fund or not authorised.', 'error')
+    return redirect(url_for('.transaction_history'))

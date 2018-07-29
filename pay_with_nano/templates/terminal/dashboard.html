@@ -16,7 +16,7 @@
                         <div class="icon"><i class="fa fa-money"></i></div>
                         <div class="count">
                             <abbr title="{{ current_user.receiving_address }}">
-                                {{ '%s...%s' | format(current_user.receiving_address[:11], current_user.receiving_address[-6:]) }}
+                                {{ '%s......%s' | format(current_user.receiving_address[:11], current_user.receiving_address[-6:]) }}
                             </abbr>
                         </div>
                         <h4>Receiving Address</h4>
@@ -29,7 +29,7 @@
                         <div class="icon"><i class="fa fa-retweet"></i></div>
                         <div class="count">
                             <abbr title="{{ current_user.refund_address }}">
-                                {{ '%s...%s' | format(current_user.refund_address[:11], current_user.refund_address[-6:]) }}
+                                {{ '%s......%s' | format(current_user.refund_address[:11], current_user.refund_address[-6:]) }}
                             </abbr>
                         </div>
                         <h4>Refund Address</h4>

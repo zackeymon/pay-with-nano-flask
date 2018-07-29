@@ -58,14 +58,22 @@ def get_transaction_from_id(transaction_id):
 
 
 def can_refund(user, transaction):
-    return transaction.user_id == user.id and Decimal(transaction.amount) <= rpc_services.get_balance_nano(
-        user.refund_address)
+    return transaction is not None and \
+           transaction.status == 'success' and \
+           transaction.user_id == user.id and \
+           Decimal(transaction.amount_nano) <= rpc_services.get_balance_nano(user.refund_address)
 
 
-def refund(user, transaction):
-    return rpc_services.send_nano(
+def refund(user, password, transaction):
+    rpc_services.unlock_wallet(user.wallet_id, password)
+    block_hash = rpc_services.send_nano(
         wallet_id=user.wallet_id,
         source=user.refund_address,
-        destination=transaction.from_address,
-        amount_nano=transaction.amount,
+        destination=transaction.source,
+        amount_nano=transaction.amount_nano
     )
+    rpc_services.lock_wallet(user.wallet_id)
+    if block_hash:
+        transaction.status = 'refunded'
+        db.session.commit()
+    return block_hash

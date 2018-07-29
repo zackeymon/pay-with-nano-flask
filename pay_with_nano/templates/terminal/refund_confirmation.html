@@ -1,0 +1,50 @@
+{% extends "base_site.html" %}
+
+{% block title %} Point-of-Sale {% endblock title %}
+
+{% block stylesheets %}
+    {{ super() }}
+{% endblock stylesheets %}
+
+{% block body_class %}login{% endblock body_class %}
+
+{% block body %}
+    <div class="login_wrapper">
+        <div class="form">
+            <section class="login_content">
+                <div class="form-wrapper">
+                    {{ display_flash_messages() }}
+
+                    <form class="form-horizontal form-label-left" method="post">
+                        <h1>Refund Payment</h1>
+
+                        <div class="confirmation_message">
+                            <h2>"Paying</h2>
+                            <h2>{{ transaction.source[:10] }}......{{ transaction.source[-5:] }}</h2>
+                            <h2><b>{{ transaction.amount_nano }}</b> NANO.</h2>
+                            <h2>Continue?"</h2>
+                        </div>
+
+                        {% for field in refund_form %}
+                            {{ render_payment_form_field(field) }}
+                        {% endfor %}
+
+                        <a href="{{ url_for('.transaction_history') }}" class="btn btn-default btn-lg submit"
+                           name="back">
+                            <i class="fa fa-backward" aria-hidden="true"></i>
+                            Back
+                        </a>
+                        <button type="submit" class="btn btn-warning btn-lg submit" name="confirm_refund">
+                            <i class="fa fa-retweet" aria-hidden="true"></i>
+                            Confirm Refund
+                        </button>
+
+                        <div class="clearfix"></div>
+
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock body %}
+

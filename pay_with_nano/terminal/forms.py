@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DecimalField
+from wtforms import StringField, PasswordField
 from wtforms.validators import InputRequired, Length, EqualTo
 
 
@@ -19,7 +19,7 @@ class RegisterForm(FlaskForm):
 
 class ChangeAddressForm(FlaskForm):
     new_address = StringField("New Address", description='xrb_', validators=[InputRequired()])
-    password = PasswordField('Password', description='********', validators=[InputRequired(), Length(min=4, max=32)])
+    password = PasswordField('Password', description='********', validators=[InputRequired()])
 
 
 class ChangePinForm(FlaskForm):
@@ -27,4 +27,8 @@ class ChangePinForm(FlaskForm):
                         validators=[InputRequired(), Length(min=4, max=4), EqualTo('re_pin')])
     re_pin = PasswordField('Repeat PIN', description='****',
                            validators=[InputRequired(), Length(min=4, max=4), EqualTo('pin')])
-    password = PasswordField('Password', description='********', validators=[InputRequired(), Length(min=4, max=32)])
+    password = PasswordField('Password', description='********', validators=[InputRequired()])
+
+
+class RefundForm(FlaskForm):
+    password = PasswordField('Password', description='********', validators=[InputRequired()])

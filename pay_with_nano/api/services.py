@@ -3,7 +3,7 @@ from time import sleep
 
 from pay_with_nano.config import TOTAL_WAIT_TIME, POLLING_INTERVAL
 from pay_with_nano.core import rpc_services
-from pay_with_nano.core.rpc_services import nano_to_raw
+from pay_with_nano.core.models import Transaction
 from .rpc_client import RPCClient
 
 
@@ -44,15 +44,13 @@ def get_hash_and_sender(to_address, sent_raw_amount):
 
 
 def make_transaction_response(address, required_amount):
-    transaction = dict(success=False, amount=required_amount, to_address=address)
-    required_raw_amount = nano_to_raw(required_amount)
+    transaction = Transaction(status='timeout', amount_nano=required_amount, destination=address)
+    required_raw_amount = rpc_services.nano_to_raw(required_amount)
 
     if required_amount_received(address, required_raw_amount):
-        transaction['success'] = True
-        transaction['hash'], transaction['from_address'] = get_hash_and_sender(address, required_raw_amount)
+        # TODO: interrupt
+        transaction.status = 'success'
+        transaction.hash, transaction.source = get_hash_and_sender(address, required_raw_amount)
 
-    transaction['timestamp'] = str(datetime.utcnow())
+    transaction.timestamp = str(datetime.utcnow())
     return transaction
-
-
-

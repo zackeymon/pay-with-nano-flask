@@ -3491,6 +3491,11 @@ form:after {
     text-shadow: 0 1px 0 #fff;
     min-width: 280px
 }
+
+.login_content .form-group {
+    text-align: left;
+}
+
 .login_content a,
 .login_content .btn-default:hover {
     text-decoration: none
@@ -3544,6 +3549,7 @@ form:after {
     margin: 20px 0;
     position: relative
 }
+.login_content form select,
 .login_content form input[type="text"],
 .login_content form input[type="email"],
 .login_content form input[type="password"] {
@@ -3556,6 +3562,7 @@ form:after {
     margin: 0 0 20px;
     width: 100%
 }
+.login_content form select:focus,
 .login_content form input[type="text"]:focus,
 .login_content form input[type="email"]:focus,
 .login_content form input[type="password"]:focus {
@@ -4274,4 +4281,16 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
 .tile-stats .count abbr {
     border-bottom-style: none;
     text-decoration-line: none;
+}
+
+.form-wrapper {
+    padding: 30px;
+}
+
+.confirmation_message {
+    text-align: left;
+    word-wrap: break-word;
+    margin-top: 40px;
+    margin-bottom: 40px;
+
 }
