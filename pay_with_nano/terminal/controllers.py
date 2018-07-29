@@ -171,3 +171,8 @@ def confirm_refund():
 
     flash('You cannot refund this transaction. Insufficient fund or not authorised.', 'error')
     return redirect(url_for('.transaction_history'))
+
+
+@terminal.route('/debug')
+def debug():
+    return render_template('terminal/refund_complete.html')

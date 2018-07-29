@@ -14,21 +14,22 @@
             <section class="login_content">
                 <div class="form-wrapper">
                     {{ display_flash_messages() }}
-
+                    <form class="form-horizontal form-label-left">
                         <h1>Success <i class="fa fa-check-square" aria-hidden="true"></i></h1>
 
                         <div class="confirmation_message">
                             <h2>"Refunded!</h2>
                             <h2>It might take the customer up to a minute to see the fund."</h2>
-                            <h2><a href="https://www.nanode.co/block/{{ block_hash }}" target="_blank">View transaction.</a></h2>
+                            <h2><a href="https://www.nanode.co/block/{{ block_hash }}" target="_blank">View
+                                transaction.</a></h2>
                         </div>
 
-                        <a href="{{ url_for('.transaction_history') }}" class="btn btn-success btn-lg submit" name="done">
+                        <a href="{{ url_for('.transaction_history') }}" class="btn btn-success btn-lg submit"
+                           name="done">
                             <i class="fa fa-check" aria-hidden="true"></i>
                             Done
                         </a>
-
-                        <div class="clearfix"></div>
+                    </form>
                 </div>
             </section>
         </div>

@@ -3500,7 +3500,7 @@ form:after {
 .login_content .btn-default:hover {
     text-decoration: none
 }
-.login_content a:hover {
+.login_content a:hover:not(.btn) {
     text-decoration: underline
 }
 .login_content h1 {
