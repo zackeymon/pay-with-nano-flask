@@ -4294,3 +4294,17 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
     margin-bottom: 40px;
 
 }
+
+.qr_message {
+    word-wrap: break-word;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+.qr_message div img {
+    padding: 20px;
+}
+
+#status {
+    margin-top: 30px;
+}

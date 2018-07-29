@@ -1,38 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Pay</title>
+{% extends "base_site.html" %}
+
+{% block title %} Point-of-Sale {% endblock title %}
+
+{% block stylesheets %}
+    {{ super() }}
+{% endblock stylesheets %}
+
+{% block body_class %}login{% endblock body_class %}
+
+{% block body %}
+    <div class="login_wrapper">
+        <div class="form">
+            <section class="login_content">
+                <div class="form-wrapper">
+                    {{ display_flash_messages() }}
+                    <form class="form-horizontal form-label-left">
+                        <h1>Payment</h1>
+
+                        <div class="qr_message">
+                            <p>Please pay {{ amount }} {{ currency }} ({{ amount_nano }} NANO) to
+                                address </p>
+                            <p><b>{{ address }}</b></p>
+                            <div id="qrcode"></div>
+                            <div id="status">
+                                <i class="fa fa-circle-o-notch fa-spin fa-4x fa-fw"></i>
+                                <h4>Waiting for payment...<span id="countdown">120</span></h4>
+                            </div>
+                        </div>
+                        <a style="visibility: hidden" href="{{ url_for('.merchant_payment_page') }}"
+                           class="btn btn-default btn-lg submit" id="ok-btn"
+                           name="OK">
+                            OK
+                        </a>
+                        {#                        <h2><a href="https://www.nanode.co/block/{{ block_hash }}" target="_blank">View#}
+                        {#                            transaction.</a></h2>#}
+
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="{{ url_for('static', filename='build/js/qrcode.min.js') }}"></script>
-</head>
-<body>
-<p>Pay {{ amount }} {{ currency }} ({{ amount_nano }} NANO) to address {{ address }}</p>
-<br/>
-<div id="qrcode"></div>
-<div id="status"></div>
-</body>
+    <script>
+        new QRCode(document.getElementById("qrcode"), "{{ uri }}");
+        axios.get("http://localhost:5000/api/payment_received?address={{ address }}&amount={{ amount_nano }}")
+            .then(result => {
+                if (result.data.status === "success") {
+                    document.getElementById("status").innerHTML = `
+                        <i class="fa fa-5x fa-check-circle" style="color: #26B99A; margin-bottom: 10px;" aria-hidden="true"></i>
+                        <p>Payment received from: ${result.data.source}</p>
+                        <p>Block Hash: <a href='https://www.nanode.co/block/${result.data.hash}'>${result.data.hash}</a></p>
+                    `;
+                } else {
+                    document.getElementById("status").innerHTML = `
+                        <i class="fa fa-5x fa-times-circle" style="color: rgba(231,76,60,.88); margin-bottom: 10px;" aria-hidden="true"></i>
+                        <p>Payment unsuccessful</p>
+                    `;
+                }
+                document.getElementById("qrcode").remove();
+                document.getElementById("ok-btn").style = "";
+            })
+            .catch(error => {
+                console.log(error);
+                alert("Cannot establish connection to the payment processor");
+            })
+        ;
 
-
-<script>
-    new QRCode(document.getElementById("qrcode"), "{{ uri }}");
-    axios.get("http://localhost:5000/api/payment_received?address={{ address }}&amount={{ amount_nano }}")
-        .then(result => {
-            console.log("Response Status: " + result.status);
-            if (result.data.status === "success") {
-                document.getElementById("status").innerHTML =
-                    `<p>Payment received from: ${result.data.from_address}</p>
-                 <p>Block Hash: <a href='https://www.nanode.co/block/${result.data.hash}'>${result.data.hash}</a></p>`;
-            } else {
-                document.getElementById("status").innerHTML =
-                    `<p class="warning">Payment unsuccessful</p>`;
+        let timeleft = 120;
+        let timer = setInterval(function () {
+            timeleft--;
+            try {
+                document.getElementById("countdown").innerText = timeleft.toString();
             }
-            document.getElementById("qrcode").remove();
-        })
-        .catch(error => {
-            console.log(error);
-            alert("Cannot establish connection to the payment processor");
-        })
-    ;
-</script>
-</html>
+            catch(err) {
+                clearInterval(timer);
+            }
+            if (timeleft <= 0)
+                clearInterval(timer);
+        }, 1000);
+    </script>
+{% endblock body %}
+
+

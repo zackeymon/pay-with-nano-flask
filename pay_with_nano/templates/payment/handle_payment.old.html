@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pay</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{{ url_for('static', filename='build/js/qrcode.min.js') }}"></script>
+</head>
+<body>
+<p>Pay {{ amount }} {{ currency }} ({{ amount_nano }} NANO) to address {{ address }}</p>
+<br/>
+<div id="status"></div>
+</body>
+
+
+<script>
+    new QRCode(document.getElementById("qrcode"), "{{ uri }}");
+    axios.get("http://localhost:5000/api/payment_received?address={{ address }}&amount={{ amount_nano }}")
+        .then(result => {
+            console.log("Response Status: " + result.status);
+            if (result.data.status === "success") {
+                document.getElementById("status").innerHTML =
+                    `<p>Payment received from: ${result.data.from_address}</p>
+                 <p>Block Hash: <a href='https://www.nanode.co/block/${result.data.hash}'>${result.data.hash}</a></p>`;
+            } else {
+                document.getElementById("status").innerHTML =
+                    `<p class="warning">Payment unsuccessful</p>`;
+            }
+            document.getElementById("qrcode").remove();
+        })
+        .catch(error => {
+            console.log(error);
+            alert("Cannot establish connection to the payment processor");
+        })
+    ;
+</script>
+</html>
