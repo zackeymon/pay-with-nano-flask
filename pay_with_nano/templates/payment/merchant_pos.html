@@ -16,9 +16,10 @@
                     {{ display_flash_messages() }}
                     <form class="form-horizontal form-label-left" method="post">
                         <h1>New Payment</h1>
+                        <p id="live_price">-</p>
 
                         {% for field in merchant_request_form %}
-                            {{ render_payment_form_field(field) }}
+                            {{ render_payment_form_field(field, onChange="handleChange()") }}
                         {% endfor %}
 
                         <div>
@@ -35,5 +36,18 @@
             </section>
         </div>
     </div>
+
+    <script>
+        function handleChange() {
+            const live_prices = {{ live_price_dict | safe }};
+            const select = document.getElementById("currency");
+            const currency = select.options[select.selectedIndex].text;
+            const live_price_text = document.getElementById("live_price")
+            if(currency === "NANO")
+                live_price_text.innerText = "-";
+            else
+                live_price_text.innerText = "1 NANO = " + live_prices[currency] + " " + currency;
+        }
+    </script>
 {% endblock body %}
 

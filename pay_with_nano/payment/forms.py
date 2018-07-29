@@ -1,14 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, DecimalField, SubmitField, SelectField, PasswordField
+from wtforms import StringField, DecimalField, SelectField, PasswordField
 from wtforms.validators import InputRequired, NumberRange, Length
 
 from pay_with_nano.core.models import Transaction
 
 
 class PaymentForm(FlaskForm):
-    address = StringField('Address', description='xrb_')
+    currency = SelectField('Base Currency', choices=Transaction.SUPPORTED_CURRENCIES)
+    address = StringField('Address', description='xrb_', validators=[InputRequired()])
     amount = DecimalField('Amount', description='0.0', validators=[InputRequired(), NumberRange(min=0.0)])
-    submit = SubmitField('Pay me')
 
 
 class MerchantRequestForm(FlaskForm):

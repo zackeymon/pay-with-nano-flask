@@ -1,10 +1,11 @@
 from copy import deepcopy
 from time import sleep
 
-from flask import render_template
+from flask import render_template, redirect, url_for
+from flask_login import current_user
 
 from pay_with_nano.config import MASTER_WALLET_ID
-from pay_with_nano.core import rpc_services
+from pay_with_nano.core import rpc_services, live_price_services
 from pay_with_nano.core.models import Transaction
 from pay_with_nano.database import db
 from pay_with_nano.payment.forms import PaymentForm
@@ -19,16 +20,22 @@ def payment_info_complete(arguments):
 def render_handle_payment_page(arguments):
     address = arguments['address']
     amount = arguments['amount']
-    uri = rpc_services.generate_uri(address, amount)
-    return render_template('handle_payment.html', amount=amount, address=address, uri=uri)
+    currency = dict(Transaction.SUPPORTED_CURRENCIES)[arguments['currency']]
+    amount_nano = amount if currency == 'NANO' else convert_to_nano(currency, amount)
+    uri = rpc_services.generate_uri(address, amount_nano)
+
+    return render_template('handle_payment.html', amount=amount, amount_nano=amount_nano,
+                           address=address, uri=uri, currency=currency)
 
 
 def render_payment_request_page(arguments):
     form = PaymentForm(csrf_enabled=False)
+    live_price_dict = live_price_services.get_nano_live_prices()
+
     if 'address' in arguments:
         form.address.data = arguments['address']
 
-    return render_template('create_payment.html', form=form)
+    return render_template('create_payment.html', form=form, live_price_dict=live_price_dict)
 
 
 def begin_payment_session(user, currency, amount):
@@ -66,5 +73,12 @@ def settle_payment(transaction_dict):
 
 
 def convert_to_nano(currency, amount):
-    return '0.0001'
+    live_price_dict = live_price_services.get_nano_live_prices()
+    amount_nano_precise = float(amount) / live_price_dict[currency]
 
+    return '{0:.3g}'.format(amount_nano_precise)
+
+
+def serve_payment_page(currency, amount):
+    transition_address = begin_payment_session(current_user, currency, amount)
+    return redirect(url_for('.payment_page', address=transition_address, amount=amount, currency=currency))

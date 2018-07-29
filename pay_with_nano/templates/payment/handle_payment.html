@@ -7,7 +7,7 @@
     <script src="{{ url_for('static', filename='build/js/qrcode.min.js') }}"></script>
 </head>
 <body>
-<p>Pay {{ amount }} NANO to address {{ address }}</p>
+<p>Pay {{ amount }} {{ currency }} ({{ amount_nano }} NANO) to address {{ address }}</p>
 <br/>
 <div id="qrcode"></div>
 <div id="status"></div>
@@ -16,7 +16,7 @@
 
 <script>
     new QRCode(document.getElementById("qrcode"), "{{ uri }}");
-    axios.get("http://localhost:5000/api/payment_received?address={{ address }}&amount={{ amount }}")
+    axios.get("http://localhost:5000/api/payment_received?address={{ address }}&amount={{ amount_nano }}")
         .then(result => {
             console.log("Response Status: " + result.status);
             if (result.data.status === "success") {

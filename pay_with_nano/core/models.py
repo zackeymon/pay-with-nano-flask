@@ -13,7 +13,10 @@ class Transaction(db.Model):
 
     SUPPORTED_CURRENCIES = [
         ('nano', 'NANO'),
-        ('usd', 'USD')
+        ('usd', 'USD'),
+        ('gbp', 'GBP'),
+        ('eur', 'EUR'),
+        ('jpy', 'JPY')
     ]
 
     id = db.Column(db.Integer, primary_key=True)
