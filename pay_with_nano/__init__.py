@@ -4,10 +4,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 from flask import Flask, render_template
 from pay_with_nano.database import db
-from pay_with_nano.config import SQLALCHEMY_DATABASE_URI
+from pay_with_nano.config import SQLALCHEMY_DATABASE_URI, MASTER_WALLET_ID
 from pay_with_nano.api.controllers import api
 from pay_with_nano.payment.controllers import pay
 from pay_with_nano.terminal.controllers import terminal
+from pay_with_nano.core import rpc_services
 
 app = Flask(__name__)
 
@@ -22,6 +23,8 @@ db.create_all()
 app.register_blueprint(api, url_prefix='/api')
 app.register_blueprint(pay, url_prefix='/pay')
 app.register_blueprint(terminal)
+
+rpc_services.unlock_wallet(MASTER_WALLET_ID, '1111')
 
 
 @app.errorhandler(401)
