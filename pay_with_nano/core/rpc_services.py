@@ -52,16 +52,19 @@ def change_wallet_password(wallet_id, password):
 
 
 # Send fund
-def send_nano(wallet_id, source, destination, amount_nano):
+def send_nano(wallet_id, source, destination, amount_nano, id=str(uuid.uuid4())):
     return _rpc_client.send(
         wallet=wallet_id,
         source=source,
         destination=destination,
         amount=int(nano_to_raw(amount_nano)),
-        id=str(uuid.uuid4())
+        id=id
     )
 
 
 def payment_begin(wallet_id):
     return _rpc_client.payment_begin(wallet_id)
 
+
+def payment_wait(address, amount_nano, timeout):
+    return _rpc_client.payment_wait(address, int(nano_to_raw(amount_nano)), timeout)

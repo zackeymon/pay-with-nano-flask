@@ -1,5 +1,5 @@
 from decimal import Decimal
-
+import hashlib
 from pay_with_nano.core import rpc_services
 from pay_with_nano.database import db
 from pay_with_nano.core.models import User, Transaction
@@ -77,3 +77,7 @@ def refund(user, password, transaction):
         transaction.status = 'refunded'
         db.session.commit()
     return block_hash
+
+
+def generate_seed(user):
+    return hashlib.sha224(user.wallet_id.encode('utf-8')).hexdigest()

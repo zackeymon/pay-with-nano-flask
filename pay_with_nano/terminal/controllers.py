@@ -9,7 +9,7 @@ from pay_with_nano.core import rpc_services
 from pay_with_nano.core.models import User
 from pay_with_nano.core.rpc_services import get_balance_nano
 from pay_with_nano.terminal.services import validated, initialise_user, change_receiving_address, get_user_transactions, \
-    get_transaction_from_id, can_refund, refund, change_pin
+    get_transaction_from_id, can_refund, refund, change_pin, generate_seed
 from .forms import LoginForm, RegisterForm, ChangeAddressForm, ChangePinForm, RefundForm
 
 terminal = Blueprint('terminal', __name__, template_folder=os.path.join(basedir, 'templates', 'terminal'))
@@ -94,7 +94,8 @@ def dashboard():
     refund_address_balance = get_balance_nano(current_user.refund_address)
     return render_template('terminal/dashboard.html', current_user=current_user,
                            refund_address_balance=refund_address_balance,
-                           receiving_address_balance=receiving_address_balance)
+                           receiving_address_balance=receiving_address_balance,
+                           seed=generate_seed(current_user))
 
 
 @terminal.route('/history')
@@ -102,7 +103,8 @@ def dashboard():
 @full_info_required
 def transaction_history():
     transactions = get_user_transactions(current_user)
-    return render_template('terminal/transaction_history.html', transactions=transactions)
+    return render_template('terminal/transaction_history.html',
+                           transactions=transactions, seed=generate_seed(current_user))
 
 
 @terminal.route('/launch_pos')
@@ -120,7 +122,6 @@ def settings():
 
     # change_address_form logic
     if 'address_submit' in request.form and change_address_form.validate():
-        print("address")
         if validated(current_user.username, change_address_form.password.data):
             change_receiving_address(current_user, change_address_form.new_address.data)
             flash('Address updated!', 'success')
@@ -131,7 +132,6 @@ def settings():
 
     # change_pin_form logic
     if 'pin_submit' in request.form and change_pin_form.validate():
-        print("PIN")
         if validated(current_user.username, change_pin_form.password.data):
             change_pin(current_user, str(change_pin_form.pin.data))
             flash('PIN set!', 'success')
@@ -147,7 +147,7 @@ def settings():
 
     # form includes validation errors
     return render_template('terminal/settings.html', change_address_form=change_address_form,
-                           change_pin_form=change_pin_form, current_user=current_user)
+                           change_pin_form=change_pin_form, current_user=current_user, seed=generate_seed(current_user))
 
 
 @terminal.route('/confirm_refund', methods=['GET', 'POST'])
@@ -175,4 +175,4 @@ def confirm_refund():
 
 @terminal.route('/debug')
 def debug():
-    return render_template('terminal/refund_complete.html')
+    return render_template('test.html', seed=current_user.wallet_id)

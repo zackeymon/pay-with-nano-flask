@@ -54,22 +54,25 @@ def settle_payment(transaction_dict):
         receiving_user = additional_transaction_info['user']
 
         if transaction.status == 'success':
-            print("transfer fund in 40 seconds...")
-            sleep(40)
-            # Send fund to receiving address
-            print(rpc_services.send_nano(
-                wallet_id=MASTER_WALLET_ID,
-                source=transition_address,
-                destination=receiving_user.receiving_address,
-                amount_nano=transaction.amount_nano
-            ))
+            print("Waiting for receive block")
+            if rpc_services.payment_wait(transition_address, transaction.amount_nano, 80000):
+                print("Sending fund to receiving address...")
+                print(rpc_services.send_nano(
+                    wallet_id=MASTER_WALLET_ID,
+                    source=transition_address,
+                    destination=receiving_user.receiving_address,
+                    amount_nano=transaction.amount_nano,
+                    id=transition_address
+                ))
 
-        transaction.user_id = receiving_user.id
-        transaction.currency = additional_transaction_info['currency']
-        transaction.amount = additional_transaction_info['amount']
+                transaction.user_id = receiving_user.id
+                transaction.currency = additional_transaction_info['currency']
+                transaction.amount = additional_transaction_info['amount']
 
-        db.session.add(transaction)
-        db.session.commit()
+                db.session.add(transaction)
+                db.session.commit()
+            else:
+                raise TimeoutError
 
 
 def convert_to_nano(currency, amount):

@@ -49,7 +49,7 @@
                                 <tbody>
                                 {% for transaction in transactions %}
                                     <tr>
-                                        <td>{{ transaction.timestamp }}</td>
+                                        <td>{{ transaction.timestamp[:-7] }}</td>
                                         <td>{{ transaction.source }}</td>
                                         <td>{{ transaction.amount_nano }}</td>
                                         <td>{{ transaction.currency.value }}</td>

@@ -15,7 +15,6 @@ def required_amount_received(address, required_amount):
     prev_balance, cur_balance = None, None
 
     for i in range(polls):
-        print("Polling...")
         cur_balance = rpc.check_account_total_balance(address)
         if cur_balance != prev_balance and prev_balance is not None:
             print("ACCOUNT BALANCE CHANGED!")

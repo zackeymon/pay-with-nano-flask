@@ -18,11 +18,11 @@
                         <h1>Payment</h1>
 
                         <div class="qr_message">
-                            <p>Please pay {{ amount }} {{ currency }} ({{ amount_nano }} NANO) to
-                                address </p>
-                            <p><b>{{ address }}</b></p>
-                            <div id="qrcode"></div>
                             <div id="status">
+                                <p>Please pay {{ amount }} {{ currency }} ({{ amount_nano }} NANO) to
+                                    address </p>
+                                <p><b>{{ address }}</b></p>
+                                <div id="qrcode"></div>
                                 <i class="fa fa-circle-o-notch fa-spin fa-4x fa-fw"></i>
                                 <h4>Waiting for payment...<span id="countdown">120</span></h4>
                             </div>
@@ -49,15 +49,15 @@
                         <i class="fa fa-5x fa-check-circle" style="color: #26B99A; margin-bottom: 10px;" aria-hidden="true"></i>
                         <p>Payment received from: ${result.data.source}</p>
                         <p>Block Hash: <a href='https://www.nanode.co/block/${result.data.hash}' target="_blank">${result.data.hash}</a></p>
+                        <p><b>It might take up to a minute for the fund to arrive.</b></p>
                     `;
                 } else {
                     document.getElementById("status").innerHTML = `
                         <i class="fa fa-5x fa-times-circle" style="color: rgba(231,76,60,.88); margin-bottom: 10px;" aria-hidden="true"></i>
-                        <p>Payment unsuccessful</p>
+                        <p>Timeout. Payment unsuccessful.</p>
                     `;
                 }
-                document.getElementById("qrcode").remove();
-                document.getElementById("ok-btn").style = "";
+                document.getElementById("ok-btn").removeAttribute("style");
             })
             .catch(error => {
                 console.log(error);
@@ -71,7 +71,7 @@
             try {
                 document.getElementById("countdown").innerText = timeleft.toString();
             }
-            catch(err) {
+            catch (err) {
                 clearInterval(timer);
             }
             if (timeleft <= 0)
