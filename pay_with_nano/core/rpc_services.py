@@ -15,7 +15,7 @@ def nano_to_raw(nano_amount):
 
 # Generate URI
 def generate_uri(address, required_nano_amount):
-    required_raw_amount = nano_to_raw(required_nano_amount)
+    required_raw_amount = int(nano_to_raw(required_nano_amount))
     return "xrb:{address}?amount={raw_amount}".format(address=address, raw_amount=required_raw_amount)
 
 

@@ -51,12 +51,13 @@ class Transaction(db.Model):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True)
-    email = db.Column(db.String(32), unique=True)
+    email = db.Column(db.String(32))
 
     receiving_address = db.Column(db.String(32))
     pin = db.Column(db.String(4))
 
     wallet_id = db.Column(db.String(80), unique=True)
+    transition_wallet_id = db.Column(db.String(80), unique=True)
     refund_address = db.Column(db.String(80), unique=True)
 
     def __init__(self, **kwargs):

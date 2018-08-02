@@ -16,8 +16,9 @@ def validated(username, password):
 
 
 def initialise_user(username, password, email):
-    # make new wallet
+    # make new wallets
     wallet_id = rpc_services.create_new_wallet()
+    transition_wallet_id = rpc_services.create_new_wallet()
 
     # generate an address for refund
     refund_address = rpc_services.create_new_account(wallet_id)
@@ -32,6 +33,7 @@ def initialise_user(username, password, email):
     new_user = User(
         username=username,
         wallet_id=wallet_id,
+        transition_wallet_id=transition_wallet_id,
         email=email,
         refund_address=refund_address
     )

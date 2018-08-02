@@ -1,10 +1,7 @@
 from copy import deepcopy
-from time import sleep
 
-from flask import render_template, redirect, url_for
-from flask_login import current_user
+from flask import render_template
 
-from pay_with_nano.config import MASTER_WALLET_ID
 from pay_with_nano.core import rpc_services, live_price_services
 from pay_with_nano.core.models import Transaction
 from pay_with_nano.database import db
@@ -39,7 +36,7 @@ def render_payment_request_page(arguments):
 
 
 def begin_payment_session(user, currency, amount):
-    transition_address = rpc_services.payment_begin(MASTER_WALLET_ID)
+    transition_address = rpc_services.payment_begin(user.transition_wallet_id)
     unsettled_payment_sessions[transition_address] = dict(user=deepcopy(user), currency=currency, amount=str(amount))
     return transition_address
 
@@ -53,24 +50,26 @@ def settle_payment(transaction_dict):
         additional_transaction_info = unsettled_payment_sessions.pop(transition_address)
         receiving_user = additional_transaction_info['user']
 
+        # Populate model
+        transaction.user_id = receiving_user.id
+        transaction.currency = additional_transaction_info['currency']
+        transaction.amount = additional_transaction_info['amount']
+
+        # Save to database
+        db.session.add(transaction)
+        db.session.commit()
+
         if transaction.status == 'success':
             print("Waiting for receive block")
             if rpc_services.payment_wait(transition_address, transaction.amount_nano, 80000):
                 print("Sending fund to receiving address...")
                 print(rpc_services.send_nano(
-                    wallet_id=MASTER_WALLET_ID,
+                    wallet_id=receiving_user.transition_wallet_id,
                     source=transition_address,
                     destination=receiving_user.receiving_address,
                     amount_nano=transaction.amount_nano,
                     id=transition_address
                 ))
-
-                transaction.user_id = receiving_user.id
-                transaction.currency = additional_transaction_info['currency']
-                transaction.amount = additional_transaction_info['amount']
-
-                db.session.add(transaction)
-                db.session.commit()
             else:
                 raise TimeoutError
 
@@ -80,8 +79,3 @@ def convert_to_nano(currency, amount):
     amount_nano_precise = float(amount) / live_price_dict[currency]
 
     return '{0:.3g}'.format(amount_nano_precise)
-
-
-def serve_payment_page(currency, amount):
-    transition_address = begin_payment_session(current_user, currency, amount)
-    return redirect(url_for('.payment_page', address=transition_address, amount=amount, currency=currency))

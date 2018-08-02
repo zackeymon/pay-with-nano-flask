@@ -1,13 +1,14 @@
 import os
-from pay_with_nano import basedir
-from flask import Blueprint, request, render_template, flash
 
+from flask import Blueprint, request, render_template, flash, redirect, url_for
+from flask_login import current_user, login_required
+
+from pay_with_nano import basedir
 from pay_with_nano.core import live_price_services
 from pay_with_nano.payment.forms import MerchantRequestForm
 from pay_with_nano.payment.services import payment_info_complete, render_handle_payment_page, \
     render_payment_request_page, \
-    settle_payment, serve_payment_page
-from flask_login import current_user, login_required
+    settle_payment, begin_payment_session
 
 pay = Blueprint('pay', __name__, template_folder=os.path.join(basedir, 'templates', 'payment'))
 
@@ -27,8 +28,10 @@ def merchant_payment_page():
 
     if merchant_request_form.validate_on_submit():
         if merchant_request_form.pin.data == current_user.pin:
-            return serve_payment_page(currency=merchant_request_form.currency.data,
-                                      amount=merchant_request_form.amount.data)
+            currency = merchant_request_form.currency.data
+            amount = merchant_request_form.amount.data
+            transition_address = begin_payment_session(current_user, currency, amount)
+            return redirect(url_for('.payment_page', address=transition_address, amount=amount, currency=currency))
         flash('PIN incorrect!', 'error')
 
     live_price_dict = live_price_services.get_nano_live_prices()
